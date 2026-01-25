@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,19 +7,36 @@ import {
   ScrollView,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { ref, onValue } from "firebase/database";
+import { database } from "./firebase/firebaseConfig";
+import { sendFakeMovement } from "./services/sendFakeMovement";
 
 export default function App() {
   const [pagina, setPagina] = useState("dashboard");
+  const [historicoMovimentos, setHistoricoMovimentos] = useState([]);
+
+  useEffect(() => {
+  const referencia = ref(database, "historico/pulseira001");
+
+  onValue(referencia, (snapshot) => {
+    const dados = snapshot.val();
+
+    if (dados) {
+      const lista = Object.keys(dados).map((key) => ({
+        id: key,
+        ...dados[key],
+      }));
+
+      setHistoricoMovimentos(lista.reverse());
+    }
+  });
+}, []);
+
+
 
   // dados simulados
   const estado = "Normal"; // Normal | Em risco | Alerta
 
-  const historicoMovimentos = [
-    { id: 1, texto: "Caminhada normal", hora: "10:32" },
-    { id: 2, texto: "Sentou-se", hora: "10:10" },
-    { id: 3, texto: "Movimento brusco", hora: "09:58" },
-    { id: 4, texto: "Deitado", hora: "09:30" },
-  ];
 
   function corEstado() {
     if (estado === "Normal") return "#2ecc71";
@@ -61,6 +78,12 @@ export default function App() {
           <Text style={styles.cardTitulo}>📍 Localização</Text>
           <Text style={styles.cardValor}>Casa – Porto</Text>
         </View>
+        <TouchableOpacity
+        style={[styles.botao, { marginTop: 15 }]}
+        onPress={sendFakeMovement}
+        >
+        <Text style={styles.botaoTexto}>Simular movimento</Text>
+        </TouchableOpacity>
 
         {/* BOTÕES */}
         <View style={styles.botoes}>
@@ -88,13 +111,20 @@ export default function App() {
       <Text style={styles.subtitulo}>Registos recentes</Text>
 
       <ScrollView>
-        {historicoMovimentos.map((item) => (
-          <View key={item.id} style={styles.cardHistorico}>
-            <Text style={styles.historicoTexto}>{item.texto}</Text>
-            <Text style={styles.historicoHora}>{item.hora}</Text>
-          </View>
-        ))}
-      </ScrollView>
+  {historicoMovimentos.length === 0 ? (
+    <Text style={{ color: "#6b7280", textAlign: "center", marginTop: 20 }}>
+      Nenhum movimento registado.
+    </Text>
+  ) : (
+    historicoMovimentos.map((item) => (
+      <View key={item.id} style={styles.cardHistorico}>
+        <Text style={styles.historicoTexto}>{item.texto}</Text>
+        <Text style={styles.historicoHora}>{item.hora}</Text>
+      </View>
+    ))
+  )}
+</ScrollView>
+
 
       <TouchableOpacity
         style={styles.botaoVoltar}
