@@ -2,6 +2,7 @@ import { useState } from "react";
 import { StatusBar, View, Text } from "react-native";
 
 // Importar componentes
+import WelcomeScreen from "./screens/WelcomeScreen";
 import LoginCuidador from "./screens/LoginCuidador";
 import RegistroDoente from "./screens/RegistroDoente";
 import Dashboard from "./screens/Dashboard";
@@ -23,6 +24,7 @@ import styles from "./styles/styles";
 
 export default function App() {
   const [pagina, setPagina] = useState("dashboard");
+  const [showWelcome, setShowWelcome] = useState(true);
   
   // Hook de autenticação
   const { user, doente, isLoading, registrarCuidador, registrarDoente } = useAuth();
@@ -58,6 +60,10 @@ export default function App() {
     mostrarConfirmacaoEliminacao(contacto, setConfirmarEliminacao);
   };
 
+  const handleIniciar = () => {
+    setShowWelcome(false);
+  };
+
   // Estado de loading inicial
   if (isLoading) {
     return (
@@ -65,6 +71,16 @@ export default function App() {
         <StatusBar style="dark" />
         <Text style={styles.loadingText}>A carregar...</Text>
       </View>
+    );
+  }
+
+  // Mostrar WelcomeScreen sempre primeiro
+  if (showWelcome) {
+    return (
+      <WelcomeScreen 
+        onIniciar={handleIniciar}
+        styles={styles}
+      />
     );
   }
 
