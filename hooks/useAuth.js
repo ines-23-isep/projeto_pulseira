@@ -163,6 +163,39 @@ export function useAuth() {
     }
   }
 
+  async function atualizarCuidador(form) {
+    if (!user || !user.id) {
+      throw new Error("Cuidador não encontrado");
+    }
+
+    const cuidadorData = {
+      ...form,
+      dataAtualizacao: new Date().toISOString(),
+    };
+
+    await set(ref(database, `cuidador/${user.id}`), cuidadorData);
+    setUser({ ...cuidadorData, id: user.id });
+    return { success: true };
+  }
+
+  async function atualizarDoente(form) {
+    if (!doente || !doente.id) {
+      throw new Error("Doente não encontrado");
+    }
+
+    const doenteData = {
+      ...form,
+      idade: parseInt(form.idade),
+      dataAtualizacao: new Date().toISOString(),
+      cuidadorId: user.id,
+      id: doente.id
+    };
+
+    await set(ref(database, `doente/${doente.id}`), doenteData);
+    setDoente(doenteData);
+    return { success: true };
+  }
+
   function logout() {
     setUser(null);
     setDoente(null);
@@ -177,6 +210,8 @@ export function useAuth() {
     registrarCuidador,
     registrarDoente,
     associarPulseira,
+    atualizarCuidador,
+    atualizarDoente,
     logout
   };
 }

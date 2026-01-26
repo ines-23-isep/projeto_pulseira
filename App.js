@@ -28,7 +28,7 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState(true);
   
   // Hook de autenticação
-  const { user, doente, pulseira, isLoading, registrarCuidador, registrarDoente, associarPulseira } = useAuth();
+  const { user, doente, pulseira, isLoading, registrarCuidador, registrarDoente, associarPulseira, atualizarCuidador, atualizarDoente } = useAuth();
   
   // Usar hooks personalizados (só se estiver autenticado)
   const { historicoMovimentos, alertas, contactos } = useFirebaseData();
@@ -152,6 +152,10 @@ export default function App() {
         <Definicoes 
           setPagina={setPagina}
           styles={styles}
+          user={user}
+          doente={doente}
+          atualizarCuidador={atualizarCuidador}
+          atualizarDoente={atualizarDoente}
         />
       );
     }
