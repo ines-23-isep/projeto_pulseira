@@ -28,6 +28,9 @@ export default function App() {
     telemovel: "",
     prioridade: "",
   });
+  const [confirmarEliminacao, setConfirmarEliminacao] = useState(null);
+  const [erros, setErros] = useState({});
+  const [mensagemSucesso, setMensagemSucesso] = useState("");
 
 
 
@@ -100,28 +103,125 @@ useEffect(() => {
     if (estado === "Alerta") return "🚨";
   }
   function guardarContacto() {
-  if (!form.nome || !form.telemovel || !form.prioridade) return;
+  if (!validarFormulario()) return;
 
   const baseRef = ref(database, "contactos/pulseira001");
+  const dadosContacto = {
+    nome: form.nome ? form.nome.trim() : "",
+    relacao: form.relacao ? form.relacao.trim() : "",
+    telemovel: form.telemovel ? form.telemovel.replace(/\s/g, '') : "", // Guarda sem espaços
+    prioridade: parseInt(String(form.prioridade).trim()), // Converte para número
+  };
 
   if (form.id) {
-    update(ref(database, `contactos/pulseira001/${form.id}`), {
-      nome: form.nome,
-      relacao: form.relacao,
-      telemovel: form.telemovel,
-      prioridade: Number(form.prioridade),
-    });
+    update(ref(database, `contactos/pulseira001/${form.id}`), dadosContacto);
+    mostrarMensagemSucesso("✅ Contacto atualizado com sucesso!");
   } else {
     const novo = push(baseRef);
-    set(novo, {
-      nome: form.nome,
-      relacao: form.relacao,
-      telemovel: form.telemovel,
-      prioridade: Number(form.prioridade),
-    });
+    set(novo, dadosContacto);
+    mostrarMensagemSucesso("✅ Contacto adicionado com sucesso!");
   }
 
+  // Limpar formulário e erros
   setForm({ id: null, nome: "", relacao: "", telemovel: "", prioridade: "" });
+  setErros({});
+}
+
+function eliminarContacto(id) {
+  const refContacto = ref(database, `contactos/pulseira001/${id}`);
+  set(refContacto, null);
+  setConfirmarEliminacao(null);
+  mostrarMensagemSucesso("🗑️ Contacto eliminado com sucesso!");
+}
+
+function mostrarConfirmacaoEliminacao(contacto) {
+  setConfirmarEliminacao(contacto);
+}
+
+function validarTelemovel(telemovel) {
+  // Remove espaços e caracteres especiais
+  const limpo = telemovel.replace(/\s/g, '').replace(/-/g, '');
+  
+  // Validações para números portugueses
+  const padroesValidos = [
+    /^9[1236]\d{7}$/, // Móveis portugueses (91, 92, 93, 96)
+    /^2\d{8}$/, // Fixos portugueses (2x)
+    /^800\d{6}$/, // Números gratuitos (800)
+    /^808\d{6}$/, // Números especiais (808)
+  ];
+  
+  return padroesValidos.some(padrao => padrao.test(limpo));
+}
+
+function validarFormulario() {
+  const novosErros = {};
+  
+  // Validação do nome
+  if (!form.nome || !form.nome.trim()) {
+    novosErros.nome = "Nome é obrigatório";
+  } else if (form.nome.trim().length < 3) {
+    novosErros.nome = "Nome deve ter pelo menos 3 caracteres";
+  } else if (form.nome.trim().length > 50) {
+    novosErros.nome = "Nome não pode ter mais de 50 caracteres";
+  }
+  
+  // Validação do telemóvel
+  if (!form.telemovel || !form.telemovel.trim()) {
+    novosErros.telemovel = "Telemóvel é obrigatório";
+  } else if (!validarTelemovel(form.telemovel)) {
+    novosErros.telemovel = "Formato de telemóvel inválido. Use: 9xx xxx xxx";
+  }
+  
+  // Validação da relação
+  if (!form.relacao || !form.relacao.trim()) {
+    novosErros.relacao = "Relação é obrigatória";
+  } else if (form.relacao.trim().length > 30) {
+    novosErros.relacao = "Relação não pode ter mais de 30 caracteres";
+  }
+  
+  // Validação da prioridade
+  if (!form.prioridade) {
+    novosErros.prioridade = "Prioridade é obrigatória";
+  } else {
+    // Converte para string se for número
+    const prioridadeStr = String(form.prioridade).trim();
+    const prioridadeNum = parseInt(prioridadeStr);
+    
+    if (isNaN(prioridadeNum) || prioridadeNum < 1) {
+      novosErros.prioridade = "Prioridade deve ser um número positivo";
+    } else if (prioridadeNum > 99) {
+      novosErros.prioridade = "Prioridade não pode ser maior que 99";
+    } else {
+      // Verificar duplicação de prioridade (apenas para novos contactos)
+      const existePrioridade = contactos.some(c => 
+        c.prioridade === prioridadeNum && c.id !== form.id
+      );
+      if (existePrioridade) {
+        novosErros.prioridade = `Já existe um contacto com prioridade ${prioridadeNum}`;
+      }
+    }
+  }
+  
+  setErros(novosErros);
+  return Object.keys(novosErros).length === 0;
+}
+
+function formatarTelemovel(texto) {
+  // Remove caracteres não numéricos
+  const numeros = texto.replace(/\D/g, '');
+  
+  // Limita a 9 dígitos
+  const limitado = numeros.slice(0, 9);
+  
+  // Formata: 9xx xxx xxx
+  if (limitado.length <= 3) return limitado;
+  if (limitado.length <= 6) return `${limitado.slice(0, 3)} ${limitado.slice(3)}`;
+  return `${limitado.slice(0, 3)} ${limitado.slice(3, 6)} ${limitado.slice(6)}`;
+}
+
+function mostrarMensagemSucesso(texto) {
+  setMensagemSucesso(texto);
+  setTimeout(() => setMensagemSucesso(""), 3000);
 }
 
 
@@ -364,6 +464,13 @@ useEffect(() => {
         <Text style={styles.subtitulo}>Quem será avisado primeiro</Text>
       </View>
 
+      {/* MENSAGEM DE SUCESSO */}
+      {mensagemSucesso && (
+        <View style={styles.mensagemSucesso}>
+          <Text style={styles.mensagemSucessoTexto}>{mensagemSucesso}</Text>
+        </View>
+      )}
+
       {/* FORMULÁRIO */}
       <View style={[styles.cardElevated, styles.formularioCard]}>
         <View style={styles.formHeader}>
@@ -373,7 +480,10 @@ useEffect(() => {
           {form.id && (
             <TouchableOpacity 
               style={styles.botaoLimpar}
-              onPress={() => setForm({ id: null, nome: "", relacao: "", telemovel: "", prioridade: "" })}
+              onPress={() => {
+                setForm({ id: null, nome: "", relacao: "", telemovel: "", prioridade: "" });
+                setErros({});
+              }}
             >
               <Text style={styles.botaoLimparTexto}>Cancelar</Text>
             </TouchableOpacity>
@@ -384,34 +494,49 @@ useEffect(() => {
           <Text style={styles.inputLabel}>Nome Completo</Text>
           <TextInput
             placeholder="Ex: João Silva"
-            style={styles.input}
+            style={[styles.input, erros.nome && styles.inputErro]}
             value={form.nome}
-            onChangeText={(v) => setForm({ ...form, nome: v })}
+            onChangeText={(v) => {
+              setForm({ ...form, nome: v });
+              if (erros.nome) setErros({ ...erros, nome: "" });
+            }}
           />
+          {erros.nome && <Text style={styles.textoErro}>{erros.nome}</Text>}
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Relação</Text>
           <TextInput
             placeholder="Ex: Filho, Esposa, Amigo"
-            style={styles.input}
+            style={[styles.input, erros.relacao && styles.inputErro]}
             value={form.relacao}
-            onChangeText={(v) => setForm({ ...form, relacao: v })}
+            onChangeText={(v) => {
+              setForm({ ...form, relacao: v });
+              if (erros.relacao) setErros({ ...erros, relacao: "" });
+            }}
           />
+          {erros.relacao && <Text style={styles.textoErro}>{erros.relacao}</Text>}
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Telemóvel</Text>
-          <View style={styles.phoneInputContainer}>
+          <View style={[styles.phoneInputContainer, erros.telemovel && styles.phoneInputContainerErro]}>
             <Text style={styles.phonePrefix}>+351</Text>
             <TextInput
               placeholder="912 345 678"
               keyboardType="phone-pad"
-              style={[styles.input, styles.phoneInput]}
+              style={[styles.input, styles.phoneInput, erros.telemovel && styles.inputErro]}
               value={form.telemovel}
-              onChangeText={(v) => setForm({ ...form, telemovel: v })}
+              onChangeText={(v) => {
+                const formatado = formatarTelemovel(v);
+                setForm({ ...form, telemovel: formatado });
+                if (erros.telemovel) setErros({ ...erros, telemovel: "" });
+              }}
+              maxLength={12 // 9 dígitos + 2 espaços
+              }
             />
           </View>
+          {erros.telemovel && <Text style={styles.textoErro}>{erros.telemovel}</Text>}
         </View>
 
         <View style={styles.inputGroup}>
@@ -420,12 +545,17 @@ useEffect(() => {
             <TextInput
               placeholder="1"
               keyboardType="numeric"
-              style={[styles.input, styles.priorityInput]}
+              style={[styles.input, styles.priorityInput, erros.prioridade && styles.inputErro]}
               value={form.prioridade}
-              onChangeText={(v) => setForm({ ...form, prioridade: v })}
+              onChangeText={(v) => {
+                setForm({ ...form, prioridade: v });
+                if (erros.prioridade) setErros({ ...erros, prioridade: "" });
+              }}
+              maxLength={2}
             />
             <Text style={styles.priorityHint}>1 = primeiro a ser avisado</Text>
           </View>
+          {erros.prioridade && <Text style={styles.textoErro}>{erros.prioridade}</Text>}
         </View>
 
         <TouchableOpacity 
@@ -457,7 +587,15 @@ useEffect(() => {
             <TouchableOpacity
               key={c.id}
               style={[styles.cardContacto, index === 0 && styles.primeiroContacto]}
-              onPress={() => setForm({ ...c })}
+              onPress={() => {
+                const formularioEditado = {
+                  ...c,
+                  telemovel: formatarTelemovel(c.telemovel), // Formata ao editar
+                  prioridade: String(c.prioridade) // Converte para string
+                };
+                setForm(formularioEditado);
+                setErros({});
+              }}
             >
               <View style={styles.contactoHeader}>
                 <View style={styles.prioridadeBadge}>
@@ -476,12 +614,28 @@ useEffect(() => {
                 <Text style={styles.contactoTelemovel}>📱 {c.telemovel}</Text>
               </View>
               
-              <TouchableOpacity
-                style={styles.botaoEditar}
-                onPress={() => setForm({ ...c })}
-              >
-                <Text style={styles.botaoEditarTexto}>✏️</Text>
-              </TouchableOpacity>
+              <View style={styles.contactoBotoes}>
+                <TouchableOpacity
+                  style={styles.botaoEditar}
+                  onPress={() => {
+                    const formularioEditado = {
+                      ...c,
+                      telemovel: formatarTelemovel(c.telemovel), // Formata ao editar
+                      prioridade: String(c.prioridade) // Converte para string
+                    };
+                    setForm(formularioEditado);
+                    setErros({});
+                  }}
+                >
+                  <Text style={styles.botaoEditarTexto}>✏️</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.botaoEliminar}
+                  onPress={() => mostrarConfirmacaoEliminacao(c)}
+                >
+                  <Text style={styles.botaoEliminarTexto}>🗑️</Text>
+                </TouchableOpacity>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
@@ -493,6 +647,48 @@ useEffect(() => {
       >
         <Text style={styles.botaoVoltarTexto}>← Voltar ao Painel</Text>
       </TouchableOpacity>
+
+      {/* DIÁLOGO DE CONFIRMAÇÃO DE ELIMINAÇÃO */}
+      {confirmarEliminacao && (
+        <View style={styles.dialogoOverlay}>
+          <View style={styles.dialogoContainer}>
+            <View style={styles.dialogoHeader}>
+              <Text style={styles.dialogoIcon}>⚠️</Text>
+              <Text style={styles.dialogoTitulo}>Confirmar Eliminação</Text>
+            </View>
+            
+            <View style={styles.dialogoContent}>
+              <Text style={styles.dialogoTexto}>
+                Tem a certeza que pretende eliminar o contacto:
+              </Text>
+              <View style={styles.dialogoContacto}>
+                <Text style={styles.dialogoContactoNome}>{confirmarEliminacao.nome}</Text>
+                <Text style={styles.dialogoContactoDetalhes}>
+                  {confirmarEliminacao.relacao} • 📱 {confirmarEliminacao.telemovel}
+                </Text>
+              </View>
+              <Text style={styles.dialogoAviso}>
+                Esta ação não pode ser desfeita.
+              </Text>
+            </View>
+            
+            <View style={styles.dialogoBotoes}>
+              <TouchableOpacity
+                style={styles.botaoCancelar}
+                onPress={() => setConfirmarEliminacao(null)}
+              >
+                <Text style={styles.botaoCancelarTexto}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.botaoConfirmarEliminar}
+                onPress={() => eliminarContacto(confirmarEliminacao.id)}
+              >
+                <Text style={styles.botaoConfirmarEliminarTexto}>Eliminar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -872,6 +1068,23 @@ const styles = StyleSheet.create({
     padding: 25,
     marginBottom: 25,
   },
+  mensagemSucesso: {
+    backgroundColor: '#10b981',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: 'center',
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  mensagemSucessoTexto: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
   formHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -917,9 +1130,26 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     borderWidth: 1.5,
   },
+  inputErro: {
+    borderColor: '#ef4444',
+    backgroundColor: '#fef2f2',
+  },
+  textoErro: {
+    color: '#ef4444',
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
   phoneInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  phoneInputContainerErro: {
+    borderColor: '#ef4444',
+    backgroundColor: '#fef2f2',
+    borderWidth: 1.5,
+    borderRadius: 12,
   },
   phonePrefix: {
     fontSize: 16,
@@ -1077,9 +1307,130 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 15,
   },
   botaoEditarTexto: {
     fontSize: 16,
+  },
+  contactoBotoes: {
+    flexDirection: 'row',
+    gap: 8,
+    marginLeft: 15,
+  },
+  botaoEliminar: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#fef2f2',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  botaoEliminarTexto: {
+    fontSize: 16,
+  },
+
+  // ESTILOS DO DIÁLOGO DE CONFIRMAÇÃO
+  dialogoOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  dialogoContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 25,
+    width: '100%',
+    maxWidth: 350,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 15,
+    elevation: 10,
+  },
+  dialogoHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  dialogoIcon: {
+    fontSize: 48,
+    marginBottom: 10,
+  },
+  dialogoTitulo: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+    textAlign: 'center',
+  },
+  dialogoContent: {
+    marginBottom: 25,
+  },
+  dialogoTexto: {
+    fontSize: 16,
+    color: '#4b5563',
+    textAlign: 'center',
+    marginBottom: 15,
+    lineHeight: 22,
+  },
+  dialogoContacto: {
+    backgroundColor: '#f9fafb',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+  dialogoContactoNome: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  dialogoContactoDetalhes: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+  dialogoAviso: {
+    fontSize: 13,
+    color: '#ef4444',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  dialogoBotoes: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  botaoCancelar: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+    alignItems: 'center',
+  },
+  botaoCancelarTexto: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4b5563',
+  },
+  botaoConfirmarEliminar: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: '#ef4444',
+    alignItems: 'center',
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  botaoConfirmarEliminarTexto: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
   },
 });
