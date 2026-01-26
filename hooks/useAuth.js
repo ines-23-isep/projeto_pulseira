@@ -33,7 +33,7 @@ export function useAuth() {
           if (doenteSnapshot.exists()) {
             const doenteData = doenteSnapshot.val();
             console.log("Doente encontrado:", doenteData);
-            // Extrair o primeiro doente
+            // Firebase retorna um objeto com IDs como chaves, precisamos extrair o primeiro valor
             const doenteId = Object.keys(doenteData)[0];
             const doenteInfo = doenteData[doenteId];
             console.log("ID do doente:", doenteId);
