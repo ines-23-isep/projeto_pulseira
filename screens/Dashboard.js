@@ -6,7 +6,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: "#f8fafc" }}
-      contentContainerStyle={{ padding: 20, flexGrow: 1 }}
+      contentContainerStyle={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 20, flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
     >
       <StatusBar style="dark" />

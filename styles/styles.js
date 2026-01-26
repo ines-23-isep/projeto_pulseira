@@ -363,6 +363,14 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 24,
   },
+  headerTopo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 5,
+    width: '100%',
+  },
   botaoDefinicoesHeader: {
     width: 44,
     height: 44,
@@ -397,6 +405,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#64748b",
     marginBottom: 5,
+    textAlign: "left",
   },
 
   // ESTADO
