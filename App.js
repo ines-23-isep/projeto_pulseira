@@ -192,9 +192,9 @@ useEffect(() => {
             <View style={styles.botaoWrapper}>
               <TouchableOpacity
                 style={[styles.botao, {width: '100%'}]}
-                onPress={() => setPagina("contatos")}
+                onPress={() => setPagina("contactos")}
               >
-                <Text style={styles.botaoTexto}>📞 Contatos de Emergência</Text>
+                <Text style={styles.botaoTexto}>📞 Contactos de Emergência</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -298,13 +298,13 @@ useEffect(() => {
     );
   }
 
-  // ---------------- CONTATOS DE EMERGÊNCIA ----------------
-  if (pagina === "contatos") {
+  // ---------------- CONTACTOS DE EMERGÊNCIA ----------------
+  if (pagina === "contactos") {
     return (
       <View style={styles.container}>
         <View style={[styles.container, { paddingTop: 40 }]}>
-          <Text style={[styles.titulo, { marginBottom: 20 }]}>Contatos de Emergência</Text>
-          <Text style={styles.subtitulo}>Lista de contatos importantes</Text>
+          <Text style={[styles.titulo, { marginBottom: 20 }]}>Contactos de Emergência</Text>
+          <Text style={styles.subtitulo}>Lista de contactos importantes</Text>
 
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ color: "#6b7280", textAlign: "center", marginTop: 20 }}>
