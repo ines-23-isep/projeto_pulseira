@@ -10,10 +10,14 @@ import { StatusBar } from "expo-status-bar";
 import { ref, onValue } from "firebase/database";
 import { database } from "./firebase/firebaseConfig";
 import { sendFakeMovement } from "./services/sendFakeMovement";
+import { sendFakeAlert } from "./services/sendFakeAlert";
+
 
 export default function App() {
   const [pagina, setPagina] = useState("dashboard");
   const [historicoMovimentos, setHistoricoMovimentos] = useState([]);
+  const [alertas, setAlertas] = useState([]);
+
 
   useEffect(() => {
   const referencia = ref(database, "historico/pulseira001");
@@ -31,6 +35,23 @@ export default function App() {
     }
   });
 }, []);
+useEffect(() => {
+  const refAlertas = ref(database, "alertas/pulseira001");
+
+  onValue(refAlertas, (snapshot) => {
+    const dados = snapshot.val();
+
+    if (dados) {
+      const lista = Object.keys(dados).map((key) => ({
+        id: key,
+        ...dados[key],
+      }));
+
+      setAlertas(lista.reverse());
+    }
+  });
+}, []);
+
 
 
 
@@ -86,6 +107,20 @@ export default function App() {
         </TouchableOpacity>
 
         {/* BOTÕES */}
+        <TouchableOpacity
+  style={[styles.botao, { marginTop: 10 }]}
+  onPress={sendFakeAlert}
+>
+  <Text style={styles.botaoTexto}>Simular alerta</Text>
+</TouchableOpacity>
+
+        <TouchableOpacity
+        style={styles.botao}
+          onPress={() => setPagina("alertas")}
+        >
+        <Text style={styles.botaoTexto}>Alertas</Text>
+        </TouchableOpacity>
+
         <View style={styles.botoes}>
           <TouchableOpacity
             style={styles.botao}
@@ -99,8 +134,53 @@ export default function App() {
           </TouchableOpacity>
         </View>
       </View>
+
+
     );
   }
+  // ---------------- ALERTAS ----------------
+  if (pagina === "alertas") {
+  return (
+    <View style={styles.container}>
+      <StatusBar style="dark" />
+
+      <Text style={styles.titulo}>Alertas</Text>
+      <Text style={styles.subtitulo}>Situações de risco</Text>
+
+      <ScrollView>
+        {alertas.length === 0 ? (
+          <Text style={{ textAlign: "center", marginTop: 20, color: "#6b7280" }}>
+            Nenhum alerta registado.
+          </Text>
+        ) : (
+          alertas.map((item) => (
+            <View key={item.id} style={styles.cardHistorico}>
+              <Text style={{ fontWeight: "600" }}>{item.tipo}</Text>
+              <Text>{item.localizacao}</Text>
+              <Text>{item.hora}</Text>
+              <Text
+                style={{
+                  marginTop: 4,
+                  color: item.estado === "Confirmado" ? "#e74c3c" : "#f1c40f",
+                }}
+              >
+                {item.estado}
+              </Text>
+            </View>
+          ))
+        )}
+      </ScrollView>
+
+      <TouchableOpacity
+        style={styles.botaoVoltar}
+        onPress={() => setPagina("dashboard")}
+      >
+        <Text style={styles.botaoTexto}>Voltar</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+n
 
   // ---------------- HISTÓRICO ----------------
   return (
