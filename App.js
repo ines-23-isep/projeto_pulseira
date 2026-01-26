@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Modal,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { ref, onValue, push, set, update } from "firebase/database";
@@ -31,6 +32,8 @@ export default function App() {
   const [confirmarEliminacao, setConfirmarEliminacao] = useState(null);
   const [erros, setErros] = useState({});
   const [mensagemSucesso, setMensagemSucesso] = useState("");
+  const [codigoPais, setCodigoPais] = useState("+351");
+  const [mostrarModalPais, setMostrarModalPais] = useState(false);
 
 
 
@@ -109,8 +112,9 @@ useEffect(() => {
   const dadosContacto = {
     nome: form.nome ? form.nome.trim() : "",
     relacao: form.relacao ? form.relacao.trim() : "",
-    telemovel: form.telemovel ? form.telemovel.replace(/\s/g, '') : "", // Guarda sem espaços
+    telemovel: form.telemovel ? `${codigoPais} ${form.telemovel.replace(/\s/g, '')}` : "", // Inclui código do país
     prioridade: parseInt(String(form.prioridade).trim()), // Converte para número
+    codigoPais: codigoPais, // Guarda o código do país
   };
 
   if (form.id) {
@@ -138,19 +142,29 @@ function mostrarConfirmacaoEliminacao(contacto) {
   setConfirmarEliminacao(contacto);
 }
 
+// Lista de códigos de países com suas regras de validação
+const codigosPais = [
+  { codigo: "+351", nome: "Portugal", bandeira: "🇵🇹", regex: /^9[1236]\d{7}$|^2\d{8}$|^800\d{6}$|^808\d{6}$/, digits: 9 },
+  { codigo: "+34", nome: "Espanha", bandeira: "🇪🇸", regex: /^[6-7]\d{8}$/, digits: 9 },
+  { codigo: "+33", nome: "França", bandeira: "🇫🇷", regex: /^[6-7]\d{8}$/, digits: 9 },
+  { codigo: "+44", nome: "Reino Unido", bandeira: "🇬🇧", regex: /^7\d{9}$/, digits: 10 },
+  { codigo: "+49", nome: "Alemanha", bandeira: "🇩🇪", regex: /^1[5-9]\d{8}$/, digits: 10 },
+  { codigo: "+39", nome: "Itália", bandeira: "🇮🇹", regex: /^3\d{8,9}$/, digits: 9 },
+];
+
 function validarTelemovel(telemovel) {
   // Remove espaços e caracteres especiais
   const limpo = telemovel.replace(/\s/g, '').replace(/-/g, '');
   
-  // Validações para números portugueses
-  const padroesValidos = [
-    /^9[1236]\d{7}$/, // Móveis portugueses (91, 92, 93, 96)
-    /^2\d{8}$/, // Fixos portugueses (2x)
-    /^800\d{6}$/, // Números gratuitos (800)
-    /^808\d{6}$/, // Números especiais (808)
-  ];
+  // Encontra o país selecionado
+  const pais = codigosPais.find(p => p.codigo === codigoPais);
+  if (!pais) return false;
   
-  return padroesValidos.some(padrao => padrao.test(limpo));
+  // Verifica se tem o número correto de dígitos
+  if (limpo.length !== pais.digits) return false;
+  
+  // Valida com o regex do país
+  return pais.regex.test(limpo);
 }
 
 function validarFormulario() {
@@ -210,13 +224,35 @@ function formatarTelemovel(texto) {
   // Remove caracteres não numéricos
   const numeros = texto.replace(/\D/g, '');
   
-  // Limita a 9 dígitos
-  const limitado = numeros.slice(0, 9);
+  // Encontra o país selecionado para limitar dígitos
+  const pais = codigosPais.find(p => p.codigo === codigoPais);
+  const maxDigitos = pais ? pais.digits : 9;
   
-  // Formata: 9xx xxx xxx
-  if (limitado.length <= 3) return limitado;
-  if (limitado.length <= 6) return `${limitado.slice(0, 3)} ${limitado.slice(3)}`;
-  return `${limitado.slice(0, 3)} ${limitado.slice(3, 6)} ${limitado.slice(6)}`;
+  // Limita ao número de dígitos do país
+  const limitado = numeros.slice(0, maxDigitos);
+  
+  // Formatação para Portugal (9 dígitos): 9xx xxx xxx
+  if (codigoPais === "+351" && maxDigitos === 9) {
+    if (limitado.length <= 3) return limitado;
+    if (limitado.length <= 6) return `${limitado.slice(0, 3)} ${limitado.slice(3)}`;
+    return `${limitado.slice(0, 3)} ${limitado.slice(3, 6)} ${limitado.slice(6)}`;
+  }
+  
+  // Formatação para Espanha/França/Itália (9 dígitos): xxx xxx xxx
+  if (maxDigitos === 9) {
+    if (limitado.length <= 3) return limitado;
+    if (limitado.length <= 6) return `${limitado.slice(0, 3)} ${limitado.slice(3)}`;
+    return `${limitado.slice(0, 3)} ${limitado.slice(3, 6)} ${limitado.slice(6)}`;
+  }
+  
+  // Formatação para Reino Unido/Alemanha (10 dígitos): xxxx xxx xxx
+  if (maxDigitos === 10) {
+    if (limitado.length <= 4) return limitado;
+    if (limitado.length <= 7) return `${limitado.slice(0, 4)} ${limitado.slice(4)}`;
+    return `${limitado.slice(0, 4)} ${limitado.slice(4, 7)} ${limitado.slice(7)}`;
+  }
+  
+  return limitado;
 }
 
 function mostrarMensagemSucesso(texto) {
@@ -521,9 +557,19 @@ function mostrarMensagemSucesso(texto) {
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Telemóvel</Text>
           <View style={[styles.phoneInputContainer, erros.telemovel && styles.phoneInputContainerErro]}>
-            <Text style={styles.phonePrefix}>+351</Text>
+            <TouchableOpacity
+              style={styles.codigoPaisButton}
+              onPress={() => {
+                setMostrarModalPais(true);
+              }}
+            >
+              <Text style={styles.codigoPaisTexto}>
+                {codigosPais.find(p => p.codigo === codigoPais)?.bandeira || "🇵🇹"} {codigoPais}
+              </Text>
+              <Text style={styles.codigoPaisSeta}>▼</Text>
+            </TouchableOpacity>
             <TextInput
-              placeholder="912 345 678"
+              placeholder={codigosPais.find(p => p.codigo === codigoPais)?.digits === 10 ? "xxxx xxx xxx" : "9xx xxx xxx"}
               keyboardType="phone-pad"
               style={[styles.input, styles.phoneInput, erros.telemovel && styles.inputErro]}
               value={form.telemovel}
@@ -532,8 +578,7 @@ function mostrarMensagemSucesso(texto) {
                 setForm({ ...form, telemovel: formatado });
                 if (erros.telemovel) setErros({ ...erros, telemovel: "" });
               }}
-              maxLength={12 // 9 dígitos + 2 espaços
-              }
+              maxLength={codigosPais.find(p => p.codigo === codigoPais)?.digits === 10 ? 13 : 12}
             />
           </View>
           {erros.telemovel && <Text style={styles.textoErro}>{erros.telemovel}</Text>}
@@ -640,6 +685,58 @@ function mostrarMensagemSucesso(texto) {
           ))}
         </View>
       )}
+
+      {/* MODAL DE SELEÇÃO DE PAÍS */}
+      <Modal
+        visible={mostrarModalPais}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setMostrarModalPais(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitulo}>Selecionar País</Text>
+              <TouchableOpacity
+                style={styles.modalFechar}
+                onPress={() => setMostrarModalPais(false)}
+              >
+                <Text style={styles.modalFecharTexto}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.paisesLista}>
+              {codigosPais.map((pais) => (
+                <TouchableOpacity
+                  key={pais.codigo}
+                  style={[
+                    styles.paisItem,
+                    codigoPais === pais.codigo && styles.paisItemSelecionado
+                  ]}
+                  onPress={() => {
+                    setCodigoPais(pais.codigo);
+                    setMostrarModalPais(false);
+                    // Limpa o telemóvel atual ao mudar de país
+                    setForm({ ...form, telemovel: "" });
+                    setErros({ ...erros, telemovel: "" });
+                  }}
+                >
+                  <View style={styles.paisInfo}>
+                    <Text style={styles.paisBandeira}>{pais.bandeira}</Text>
+                    <View style={styles.paisDetalhes}>
+                      <Text style={styles.paisNome}>{pais.nome}</Text>
+                      <Text style={styles.paisCodigo}>{pais.codigo}</Text>
+                    </View>
+                  </View>
+                  {codigoPais === pais.codigo && (
+                    <Text style={styles.paisSelecionado}>✓</Text>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <TouchableOpacity
         style={styles.botaoVoltar}
@@ -1157,6 +1254,27 @@ const styles = StyleSheet.create({
     marginRight: 8,
     fontWeight: '500',
   },
+  codigoPaisButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  codigoPaisTexto: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginRight: 4,
+  },
+  codigoPaisSeta: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
   phoneInput: {
     flex: 1,
   },
@@ -1432,5 +1550,89 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#ffffff',
+  },
+
+  // ESTILOS DO MODAL DE SELEÇÃO DE PAÍS
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    width: '90%',
+    height: '60%',
+    minHeight: 300,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  modalTitulo: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1f2937',
+  },
+  modalFechar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalFecharTexto: {
+    fontSize: 16,
+    color: '#6b7280',
+    fontWeight: '600',
+  },
+  paisesLista: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  paisItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f9fafb',
+  },
+  paisItemSelecionado: {
+    backgroundColor: '#f0f9ff',
+  },
+  paisInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  paisBandeira: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  paisDetalhes: {
+    flex: 1,
+  },
+  paisNome: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 2,
+  },
+  paisCodigo: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  paisSelecionado: {
+    fontSize: 18,
+    color: '#3b82f6',
+    fontWeight: '700',
   },
 });
