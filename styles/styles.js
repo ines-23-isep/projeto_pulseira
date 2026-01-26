@@ -140,6 +140,86 @@ const styles = StyleSheet.create({
     shadowColor: 'transparent',
     elevation: 0,
   },
+
+  // ESTILOS PARA FORMULÁRIOS DE REGISTRO
+  dadosBasicosRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  sexoContainer: {
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  sexoBotao: {
+    flex: 1,
+    padding: 12,
+    borderWidth: 1.5,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  sexoBotaoSelecionado: {
+    backgroundColor: '#4f46e5',
+    borderColor: '#4f46e5',
+  },
+  sexoBotaoTexto: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  sexoBotaoTextoSelecionado: {
+    color: '#ffffff',
+  },
+
+  // ESTILOS PARA CONDIÇÕES DE SAÚDE
+  condicoesContainer: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  condicoesTitulo: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  condicoesSubtitulo: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginBottom: 16,
+  },
+  condicaoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  condicaoCheckbox: {
+    width: 22,
+    height: 22,
+    borderWidth: 2,
+    borderColor: '#d1d5db',
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  condicaoCheckboxSelecionado: {
+    backgroundColor: '#4f46e5',
+    borderColor: '#4f46e5',
+  },
+  condicaoCheck: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  condicaoLabel: {
+    fontSize: 15,
+    color: '#374151',
+    flex: 1,
+  },
   header: {
     marginTop: 20,
     marginBottom: 25,

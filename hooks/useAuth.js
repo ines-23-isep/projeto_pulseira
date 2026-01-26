@@ -38,7 +38,7 @@ export function useAuth() {
   }, []);
 
   async function registrarCuidador(form) {
-    const { email, password, nome } = form;
+    const { email, password, nome, telemovel, relacao } = form;
     const cuidadorRef = ref(database, "cuidador");
 
     // Verificar se já existe cuidador
@@ -53,11 +53,26 @@ export function useAuth() {
       email,
       password, // Em produção, usar hash
       nome,
+      telemovel,
+      relacao,
       dataRegistro: new Date().toISOString(),
       id: push(cuidadorRef).key
     };
 
     await set(ref(database, `cuidador/${cuidadorData.id}`), cuidadorData);
+    
+    // Adicionar cuidador como contacto de emergência principal
+    const contactoData = {
+      nome: cuidadorData.nome,
+      relacao: cuidadorData.relacao,
+      telemovel: `+351 ${cuidadorData.telemovel.replace(/\s/g, '')}`,
+      prioridade: 1, // Principal
+      codigoPais: "+351",
+      isCuidador: true
+    };
+    
+    await set(ref(database, "contactos/pulseira001/cuidador_principal"), contactoData);
+    
     setUser(cuidadorData);
     return { success: true, needsDoente: true };
   }

@@ -5,7 +5,9 @@ export default function LoginCuidador({ onRegistro, styles }) {
   const [form, setForm] = useState({
     nome: "",
     email: "",
-    password: ""
+    password: "",
+    telemovel: "",
+    relacao: ""
   });
   const [erros, setErros] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -33,9 +35,33 @@ export default function LoginCuidador({ onRegistro, styles }) {
     } else if (form.password.length < 6) {
       novosErros.password = "Password deve ter pelo menos 6 caracteres";
     }
+
+    // Validação do telemóvel
+    if (!form.telemovel || !form.telemovel.trim()) {
+      novosErros.telemovel = "Telemóvel é obrigatório";
+    } else if (!/^9\d{8}$/.test(form.telemovel.replace(/\s/g, ''))) {
+      novosErros.telemovel = "Telemóvel inválido. Use: 9xx xxx xxx";
+    }
+    
+    // Validação da relação
+    if (!form.relacao || !form.relacao.trim()) {
+      novosErros.relacao = "Relação com o doente é obrigatória";
+    }
     
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
+  }
+
+  function formatarTelemovel(texto) {
+    // Remove caracteres não numéricos
+    const numeros = texto.replace(/\D/g, '');
+    // Limita a 9 dígitos
+    const limitado = numeros.slice(0, 9);
+    
+    // Formatação: 9xx xxx xxx
+    if (limitado.length <= 3) return limitado;
+    if (limitado.length <= 6) return `${limitado.slice(0, 3)} ${limitado.slice(3)}`;
+    return `${limitado.slice(0, 3)} ${limitado.slice(3, 6)} ${limitado.slice(6)}`;
   }
 
   async function handleSubmit() {
@@ -45,7 +71,7 @@ export default function LoginCuidador({ onRegistro, styles }) {
     try {
       await onRegistro(form);
     } catch (error) {
-      setErros({ geral: "Ocorreu um erro. Tente novamente." });
+      setErros({ geral: error.message || "Ocorreu um erro. Tente novamente." });
     } finally {
       setIsLoading(false);
     }
@@ -117,6 +143,38 @@ export default function LoginCuidador({ onRegistro, styles }) {
               secureTextEntry
             />
             {erros.password && <Text style={styles.textoErro}>{erros.password}</Text>}
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Telemóvel (para alertas)</Text>
+            <TextInput
+              placeholder="9xx xxx xxx"
+              style={[styles.input, erros.telemovel && styles.inputErro]}
+              value={form.telemovel}
+              onChangeText={(v) => {
+                const formatado = formatarTelemovel(v);
+                setForm({ ...form, telemovel: formatado });
+                if (erros.telemovel) setErros({ ...erros, telemovel: "" });
+              }}
+              keyboardType="phone-pad"
+              maxLength={12}
+            />
+            {erros.telemovel && <Text style={styles.textoErro}>{erros.telemovel}</Text>}
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Relação com o doente</Text>
+            <TextInput
+              placeholder="Ex: Filho, Esposa, Irmão, Amigo"
+              style={[styles.input, erros.relacao && styles.inputErro]}
+              value={form.relacao}
+              onChangeText={(v) => {
+                setForm({ ...form, relacao: v });
+                if (erros.relacao) setErros({ ...erros, relacao: "" });
+              }}
+              autoCapitalize="words"
+            />
+            {erros.relacao && <Text style={styles.textoErro}>{erros.relacao}</Text>}
           </View>
 
           {erros.geral && (

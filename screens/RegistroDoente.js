@@ -5,12 +5,34 @@ export default function RegistroDoente({ onRegistro, styles }) {
   const [form, setForm] = useState({
     nome: "",
     idade: "",
-    condicao: "",
-    medicacao: "",
-    notas: ""
+    sexo: "",
+    altura: "",
+    peso: "",
+    problemasMobilidade: false,
+    historicoQuedas: false,
+    doencasCardiacas: false,
+    hipertensao: false,
+    diabetes: false,
+    doencaNeurologica: false,
+    tonturasFrequentes: false,
+    problemasVisao: false,
+    outraCondicao: "",
+    outraCondicaoChecked: false
   });
   const [erros, setErros] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const condicoesOpcoes = [
+    { key: "problemasMobilidade", label: "Problemas de mobilidade" },
+    { key: "historicoQuedas", label: "Histórico de quedas" },
+    { key: "doencasCardiacas", label: "Doenças cardíacas" },
+    { key: "hipertensao", label: "Hipertensão" },
+    { key: "diabetes", label: "Diabetes" },
+    { key: "doencaNeurologica", label: "Doença neurológica (ex: Parkinson, Alzheimer)" },
+    { key: "tonturasFrequentes", label: "Tonturas frequentes" },
+    { key: "problemasVisao", label: "Problemas de visão" },
+    { key: "outraCondicaoChecked", label: "Outro" }
+  ];
 
   function validarFormulario() {
     const novosErros = {};
@@ -31,12 +53,31 @@ export default function RegistroDoente({ onRegistro, styles }) {
         novosErros.idade = "Idade deve ser um número entre 0 e 150";
       }
     }
-    
-    // Validação da condição
-    if (!form.condicao || !form.condicao.trim()) {
-      novosErros.condicao = "Condição médica é obrigatória";
-    } else if (form.condicao.trim().length < 5) {
-      novosErros.condicao = "Descreva brevemente a condição médica";
+
+    // Validação do sexo
+    if (!form.sexo) {
+      novosErros.sexo = "Sexo é obrigatório";
+    }
+
+    // Validação da altura (opcional)
+    if (form.altura && form.altura.trim()) {
+      const alturaNum = parseFloat(form.altura);
+      if (isNaN(alturaNum) || alturaNum < 50 || alturaNum > 250) {
+        novosErros.altura = "Altura deve ser um número entre 50 e 250 cm";
+      }
+    }
+
+    // Validação do peso (opcional)
+    if (form.peso && form.peso.trim()) {
+      const pesoNum = parseFloat(form.peso);
+      if (isNaN(pesoNum) || pesoNum < 10 || pesoNum > 300) {
+        novosErros.peso = "Peso deve ser um número entre 10 e 300 kg";
+      }
+    }
+
+    // Validação da condição "Outro"
+    if (form.outraCondicaoChecked && (!form.outraCondicao || !form.outraCondicao.trim())) {
+      novosErros.outraCondicao = "Descreva a outra condição";
     }
     
     setErros(novosErros);
@@ -53,6 +94,14 @@ export default function RegistroDoente({ onRegistro, styles }) {
       setErros({ geral: "Ocorreu um erro ao guardar os dados. Tente novamente." });
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  function toggleCondicao(key) {
+    if (key === "outraCondicaoChecked") {
+      setForm({ ...form, [key]: !form[key], outraCondicao: !form[key] ? form.outraCondicao : "" });
+    } else {
+      setForm({ ...form, [key]: !form[key] });
     }
   }
 
@@ -93,71 +142,119 @@ export default function RegistroDoente({ onRegistro, styles }) {
             {erros.nome && <Text style={styles.textoErro}>{erros.nome}</Text>}
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Idade</Text>
-            <TextInput
-              placeholder="Idade do paciente"
-              style={[styles.input, erros.idade && styles.inputErro]}
-              value={form.idade}
-              onChangeText={(v) => {
-                setForm({ ...form, idade: v });
-                if (erros.idade) setErros({ ...erros, idade: "" });
-              }}
-              keyboardType="numeric"
-              maxLength={3}
-            />
-            {erros.idade && <Text style={styles.textoErro}>{erros.idade}</Text>}
+          <View style={styles.dadosBasicosRow}>
+            <View style={[styles.inputGroup, { flex: 1, marginRight: 10 }]}>
+              <Text style={styles.inputLabel}>Idade</Text>
+              <TextInput
+                placeholder="Idade"
+                style={[styles.input, erros.idade && styles.inputErro]}
+                value={form.idade}
+                onChangeText={(v) => {
+                  setForm({ ...form, idade: v });
+                  if (erros.idade) setErros({ ...erros, idade: "" });
+                }}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+              {erros.idade && <Text style={styles.textoErro}>{erros.idade}</Text>}
+            </View>
+
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.inputLabel}>Sexo</Text>
+              <View style={styles.sexoContainer}>
+                <TouchableOpacity
+                  style={[styles.sexoBotao, form.sexo === "M" && styles.sexoBotaoSelecionado]}
+                  onPress={() => {
+                    setForm({ ...form, sexo: "M" });
+                    if (erros.sexo) setErros({ ...erros, sexo: "" });
+                  }}
+                >
+                  <Text style={[styles.sexoBotaoTexto, form.sexo === "M" && styles.sexoBotaoTextoSelecionado]}>Masculino</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.sexoBotao, form.sexo === "F" && styles.sexoBotaoSelecionado]}
+                  onPress={() => {
+                    setForm({ ...form, sexo: "F" });
+                    if (erros.sexo) setErros({ ...erros, sexo: "" });
+                  }}
+                >
+                  <Text style={[styles.sexoBotaoTexto, form.sexo === "F" && styles.sexoBotaoTextoSelecionado]}>Feminino</Text>
+                </TouchableOpacity>
+              </View>
+              {erros.sexo && <Text style={styles.textoErro}>{erros.sexo}</Text>}
+            </View>
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Condição Médica</Text>
-            <TextInput
-              placeholder="Ex: Hipertensão, Diabetes, Alzheimer..."
-              style={[styles.input, erros.condicao && styles.inputErro]}
-              value={form.condicao}
-              onChangeText={(v) => {
-                setForm({ ...form, condicao: v });
-                if (erros.condicao) setErros({ ...erros, condicao: "" });
-              }}
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-            />
-            {erros.condicao && <Text style={styles.textoErro}>{erros.condicao}</Text>}
+          <View style={styles.dadosBasicosRow}>
+            <View style={[styles.inputGroup, { flex: 1, marginRight: 10 }]}>
+              <Text style={styles.inputLabel}>Altura (cm) - Opcional</Text>
+              <TextInput
+                placeholder="Ex: 170"
+                style={[styles.input, erros.altura && styles.inputErro]}
+                value={form.altura}
+                onChangeText={(v) => {
+                  setForm({ ...form, altura: v });
+                  if (erros.altura) setErros({ ...erros, altura: "" });
+                }}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+              {erros.altura && <Text style={styles.textoErro}>{erros.altura}</Text>}
+            </View>
+
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.inputLabel}>Peso (kg) - Opcional</Text>
+              <TextInput
+                placeholder="Ex: 70"
+                style={[styles.input, erros.peso && styles.inputErro]}
+                value={form.peso}
+                onChangeText={(v) => {
+                  setForm({ ...form, peso: v });
+                  if (erros.peso) setErros({ ...erros, peso: "" });
+                }}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+              {erros.peso && <Text style={styles.textoErro}>{erros.peso}</Text>}
+            </View>
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Medicação (Opcional)</Text>
-            <TextInput
-              placeholder="Medicamentos em uso..."
-              style={[styles.input, erros.medicacao && styles.inputErro]}
-              value={form.medicacao}
-              onChangeText={(v) => {
-                setForm({ ...form, medicacao: v });
-                if (erros.medicacao) setErros({ ...erros, medicacao: "" });
-              }}
-              multiline
-              numberOfLines={2}
-              textAlignVertical="top"
-            />
-            {erros.medicacao && <Text style={styles.textoErro}>{erros.medicacao}</Text>}
-          </View>
+          {/* Condições de Saúde */}
+          <View style={styles.condicoesContainer}>
+            <Text style={styles.condicoesTitulo}>Condições de saúde</Text>
+            <Text style={styles.condicoesSubtitulo}>Selecione todas as que aplicam:</Text>
+            
+            {condicoesOpcoes.map((opcao) => (
+              <TouchableOpacity
+                key={opcao.key}
+                style={styles.condicaoItem}
+                onPress={() => toggleCondicao(opcao.key)}
+              >
+                <View style={[styles.condicaoCheckbox, form[opcao.key] && styles.condicaoCheckboxSelecionado]}>
+                  {form[opcao.key] && <Text style={styles.condicaoCheck}>✓</Text>}
+                </View>
+                <Text style={styles.condicaoLabel}>{opcao.label}</Text>
+              </TouchableOpacity>
+            ))}
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Notas Adicionais (Opcional)</Text>
-            <TextInput
-              placeholder="Informações relevantes sobre o paciente..."
-              style={[styles.input, erros.notas && styles.inputErro]}
-              value={form.notas}
-              onChangeText={(v) => {
-                setForm({ ...form, notas: v });
-                if (erros.notas) setErros({ ...erros, notas: "" });
-              }}
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-            />
-            {erros.notas && <Text style={styles.textoErro}>{erros.notas}</Text>}
+            {form.outraCondicaoChecked && (
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Descreva a outra condição</Text>
+                <TextInput
+                  placeholder="Especifique a condição..."
+                  style={[styles.input, erros.outraCondicao && styles.inputErro]}
+                  value={form.outraCondicao}
+                  onChangeText={(v) => {
+                    setForm({ ...form, outraCondicao: v });
+                    if (erros.outraCondicao) setErros({ ...erros, outraCondicao: "" });
+                  }}
+                  multiline
+                  numberOfLines={2}
+                  textAlignVertical="top"
+                />
+                {erros.outraCondicao && <Text style={styles.textoErro}>{erros.outraCondicao}</Text>}
+              </View>
+            )}
           </View>
 
           {erros.geral && (
@@ -175,13 +272,6 @@ export default function RegistroDoente({ onRegistro, styles }) {
               {isLoading ? "A processar..." : "Guardar Dados"}
             </Text>
           </TouchableOpacity>
-        </View>
-
-        {/* Informação */}
-        <View style={styles.loginFooter}>
-          <Text style={styles.loginFooterTexto}>
-            Estes dados serão usados para personalizar o monitoramento
-          </Text>
         </View>
       </View>
     </ScrollView>
