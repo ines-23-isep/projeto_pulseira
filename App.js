@@ -7,16 +7,28 @@ import {
   ScrollView,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, push, set, update } from "firebase/database";
 import { database } from "./firebase/firebaseConfig";
 import { sendFakeMovement } from "./services/sendFakeMovement";
 import { sendFakeAlert } from "./services/sendFakeAlert";
+import { TextInput } from "react-native";
+
+
 
 
 export default function App() {
   const [pagina, setPagina] = useState("dashboard");
   const [historicoMovimentos, setHistoricoMovimentos] = useState([]);
   const [alertas, setAlertas] = useState([]);
+  const [contactos, setContactos] = useState([]);
+  const [form, setForm] = useState({
+    id: null,
+    nome: "",
+    relacao: "",
+    telemovel: "",
+    prioridade: "",
+  });
+
 
 
   useEffect(() => {
@@ -51,7 +63,24 @@ useEffect(() => {
     }
   });
 }, []);
+useEffect(() => {
+  const refContactos = ref(database, "contactos/pulseira001");
 
+  onValue(refContactos, (snapshot) => {
+    const dados = snapshot.val();
+
+    if (dados) {
+      const lista = Object.keys(dados).map((id) => ({
+        id,
+        ...dados[id],
+      }));
+
+      setContactos(lista.sort((a, b) => a.prioridade - b.prioridade));
+    } else {
+      setContactos([]);
+    }
+  });
+}, []);
 
 
 
@@ -70,6 +99,31 @@ useEffect(() => {
     if (estado === "Em risco") return "⚠️";
     if (estado === "Alerta") return "🚨";
   }
+  function guardarContacto() {
+  if (!form.nome || !form.telemovel || !form.prioridade) return;
+
+  const baseRef = ref(database, "contactos/pulseira001");
+
+  if (form.id) {
+    update(ref(database, `contactos/pulseira001/${form.id}`), {
+      nome: form.nome,
+      relacao: form.relacao,
+      telemovel: form.telemovel,
+      prioridade: Number(form.prioridade),
+    });
+  } else {
+    const novo = push(baseRef);
+    set(novo, {
+      nome: form.nome,
+      relacao: form.relacao,
+      telemovel: form.telemovel,
+      prioridade: Number(form.prioridade),
+    });
+  }
+
+  setForm({ id: null, nome: "", relacao: "", telemovel: "", prioridade: "" });
+}
+
 
   // ---------------- DASHBOARD ----------------
   if (pagina === "dashboard") {
@@ -300,30 +354,150 @@ useEffect(() => {
 
   // ---------------- CONTACTOS DE EMERGÊNCIA ----------------
   if (pagina === "contactos") {
-    return (
-      <View style={styles.container}>
-        <View style={[styles.container, { paddingTop: 40 }]}>
-          <Text style={[styles.titulo, { marginBottom: 20 }]}>Contactos de Emergência</Text>
-          <Text style={styles.subtitulo}>Lista de contactos importantes</Text>
-
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ color: "#6b7280", textAlign: "center", marginTop: 20 }}>
-              Página em desenvolvimento
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.botaoVoltar}
-            onPress={() => setPagina("dashboard")}
-          >
-            <Text style={styles.botaoTexto}>Voltar</Text>
-          </TouchableOpacity>
-        </View>
+  return (
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#f8fafc" }}
+      contentContainerStyle={{ padding: 20, paddingBottom: 30 }}
+    >
+      <View style={styles.header}>
+        <Text style={styles.titulo}>Contactos de Emergência</Text>
+        <Text style={styles.subtitulo}>Quem será avisado primeiro</Text>
       </View>
-    );
-  }
+
+      {/* FORMULÁRIO */}
+      <View style={[styles.cardElevated, styles.formularioCard]}>
+        <View style={styles.formHeader}>
+          <Text style={styles.formTitulo}>
+            {form.id ? "✏️ Editar Contacto" : "➕ Novo Contacto"}
+          </Text>
+          {form.id && (
+            <TouchableOpacity 
+              style={styles.botaoLimpar}
+              onPress={() => setForm({ id: null, nome: "", relacao: "", telemovel: "", prioridade: "" })}
+            >
+              <Text style={styles.botaoLimparTexto}>Cancelar</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Nome Completo</Text>
+          <TextInput
+            placeholder="Ex: João Silva"
+            style={styles.input}
+            value={form.nome}
+            onChangeText={(v) => setForm({ ...form, nome: v })}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Relação</Text>
+          <TextInput
+            placeholder="Ex: Filho, Esposa, Amigo"
+            style={styles.input}
+            value={form.relacao}
+            onChangeText={(v) => setForm({ ...form, relacao: v })}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Telemóvel</Text>
+          <View style={styles.phoneInputContainer}>
+            <Text style={styles.phonePrefix}>+351</Text>
+            <TextInput
+              placeholder="912 345 678"
+              keyboardType="phone-pad"
+              style={[styles.input, styles.phoneInput]}
+              value={form.telemovel}
+              onChangeText={(v) => setForm({ ...form, telemovel: v })}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Prioridade</Text>
+          <View style={styles.priorityContainer}>
+            <TextInput
+              placeholder="1"
+              keyboardType="numeric"
+              style={[styles.input, styles.priorityInput]}
+              value={form.prioridade}
+              onChangeText={(v) => setForm({ ...form, prioridade: v })}
+            />
+            <Text style={styles.priorityHint}>1 = primeiro a ser avisado</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity 
+          style={[styles.botao, styles.botaoPrimario, (!form.nome || !form.telemovel || !form.prioridade) && styles.botaoDesativado]} 
+          onPress={guardarContacto}
+          disabled={!form.nome || !form.telemovel || !form.prioridade}
+        >
+          <Text style={styles.botaoTexto}>
+            {form.id ? "💾 Atualizar" : "💾 Adicionar Contacto"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* LISTA DE CONTACTOS */}
+      <View style={styles.listaHeader}>
+        <Text style={styles.listaTitulo}>Contactos Registados</Text>
+        <Text style={styles.listaContador}>{contactos.length} contacto{contactos.length !== 1 ? 's' : ''}</Text>
+      </View>
+
+      {contactos.length === 0 ? (
+        <View style={styles.semContactosContainer}>
+          <Text style={styles.semContactosIcon}>📞</Text>
+          <Text style={styles.semContactosTexto}>Ainda não tem contactos</Text>
+          <Text style={styles.semContactosSubtexto}>Adicione pelo menos um contacto de emergência</Text>
+        </View>
+      ) : (
+        <View style={styles.contactosLista}>
+          {contactos.map((c, index) => (
+            <TouchableOpacity
+              key={c.id}
+              style={[styles.cardContacto, index === 0 && styles.primeiroContacto]}
+              onPress={() => setForm({ ...c })}
+            >
+              <View style={styles.contactoHeader}>
+                <View style={styles.prioridadeBadge}>
+                  <Text style={styles.prioridadeTexto}>{c.prioridade}</Text>
+                </View>
+                {index === 0 && (
+                  <View style={styles.primeiroBadge}>
+                    <Text style={styles.primeiroTexto}>Principal</Text>
+                  </View>
+                )}
+              </View>
+              
+              <View style={styles.contactoInfo}>
+                <Text style={styles.contactoNome}>{c.nome}</Text>
+                <Text style={styles.contactoRelacao}>{c.relacao}</Text>
+                <Text style={styles.contactoTelemovel}>📱 {c.telemovel}</Text>
+              </View>
+              
+              <TouchableOpacity
+                style={styles.botaoEditar}
+                onPress={() => setForm({ ...c })}
+              >
+                <Text style={styles.botaoEditarTexto}>✏️</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      <TouchableOpacity
+        style={styles.botaoVoltar}
+        onPress={() => setPagina("dashboard")}
+      >
+        <Text style={styles.botaoVoltarTexto}>← Voltar ao Painel</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
 }
 
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -691,5 +865,221 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     marginLeft: 8,
+  },
+
+  // ESTILOS DOS CONTACTOS DE EMERGÊNCIA
+  formularioCard: {
+    padding: 25,
+    marginBottom: 25,
+  },
+  formHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 25,
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  formTitulo: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1e293b',
+  },
+  botaoLimpar: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 8,
+  },
+  botaoLimparTexto: {
+    color: '#64748b',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#1f2937',
+    borderWidth: 1.5,
+  },
+  phoneInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  phonePrefix: {
+    fontSize: 16,
+    color: '#6b7280',
+    marginRight: 8,
+    fontWeight: '500',
+  },
+  phoneInput: {
+    flex: 1,
+  },
+  priorityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  priorityInput: {
+    width: 80,
+    marginRight: 12,
+  },
+  priorityHint: {
+    fontSize: 13,
+    color: '#6b7280',
+    flex: 1,
+  },
+  botaoPrimario: {
+    marginTop: 10,
+    shadowColor: '#4f46e5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  botaoDesativado: {
+    backgroundColor: '#d1d5db',
+    shadowColor: 'transparent',
+    elevation: 0,
+  },
+  listaHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  listaTitulo: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1e293b',
+  },
+  listaContador: {
+    fontSize: 14,
+    color: '#6b7280',
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  semContactosContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#f1f5f9',
+    borderStyle: 'dashed',
+  },
+  semContactosIcon: {
+    fontSize: 48,
+    marginBottom: 15,
+  },
+  semContactosTexto: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 5,
+  },
+  semContactosSubtexto: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+  contactosLista: {
+    gap: 12,
+  },
+  cardContacto: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  primeiroContacto: {
+    borderColor: '#10b981',
+    borderWidth: 2,
+    backgroundColor: '#f0fdf4',
+  },
+  contactoHeader: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  prioridadeBadge: {
+    backgroundColor: '#4f46e5',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  prioridadeTexto: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  primeiroBadge: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  primeiroTexto: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  contactoInfo: {
+    flex: 1,
+  },
+  contactoNome: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  contactoRelacao: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginBottom: 4,
+  },
+  contactoTelemovel: {
+    fontSize: 14,
+    color: '#374151',
+    fontWeight: '500',
+  },
+  botaoEditar: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 15,
+  },
+  botaoEditarTexto: {
+    fontSize: 16,
   },
 });
