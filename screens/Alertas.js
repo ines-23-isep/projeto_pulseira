@@ -3,11 +3,9 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 export default function Alertas({ setPagina, styles, alertas }) {
   return (
     <View style={styles.container}>
-      <View style={{ flex: 1, width: '100%' }}>
-        <View style={[styles.header, { marginBottom: 15 }]}>
-          <Text style={[styles.titulo, { fontSize: 28 }]}>Alertas</Text>
-          <Text style={styles.subtitulo}>Histórico de notificações e alertas</Text>
-        </View>
+      <View style={[styles.container, { paddingTop: 40 }]}>
+        <Text style={[styles.titulo, { marginBottom: 20 }]}>Alertas</Text>
+        <Text style={styles.subtitulo}>Histórico de notificações e alertas</Text>
 
         <ScrollView style={{ width: '100%' }} contentContainerStyle={{ paddingBottom: 30 }}>
           {alertas.length === 0 ? (

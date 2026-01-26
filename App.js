@@ -5,6 +5,7 @@ import { StatusBar, View, Text } from "react-native";
 import WelcomeScreen from "./screens/WelcomeScreen";
 import LoginCuidador from "./screens/LoginCuidador";
 import RegistroDoente from "./screens/RegistroDoente";
+import AssociacaoPulseira from "./screens/AssociacaoPulseira";
 import Dashboard from "./screens/Dashboard";
 import ContactosEmergencia from "./screens/ContactosEmergencia";
 import Historico from "./screens/Historico";
@@ -27,7 +28,7 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState(true);
   
   // Hook de autenticação
-  const { user, doente, isLoading, registrarCuidador, registrarDoente } = useAuth();
+  const { user, doente, pulseira, isLoading, registrarCuidador, registrarDoente, associarPulseira } = useAuth();
   
   // Usar hooks personalizados (só se estiver autenticado)
   const { historicoMovimentos, alertas, contactos } = useFirebaseData();
@@ -84,8 +85,8 @@ export default function App() {
     );
   }
 
-  // Se já existe cuidador e doente, vai diretamente para dashboard
-  if (user && doente) {
+  // Se já existe cuidador, doente e pulseira, vai diretamente para dashboard
+  if (user && doente && pulseira) {
     // Renderizar componente baseado na página
     if (pagina === "dashboard") {
       return (
@@ -154,6 +155,16 @@ export default function App() {
         />
       );
     }
+  }
+
+  // Se há utilizador e doente mas não há pulseira, mostrar associação da pulseira
+  if (user && doente && !pulseira) {
+    return (
+      <AssociacaoPulseira 
+        onAssociar={associarPulseira}
+        styles={styles}
+      />
+    );
   }
 
   // Se não há utilizador, mostrar registro do cuidador

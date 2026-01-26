@@ -23,10 +23,10 @@ export default function ContactosEmergencia({
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: "#f8fafc" }}
-      contentContainerStyle={{ padding: 20, paddingBottom: 30 }}
+      contentContainerStyle={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 30 }}
     >
-      <View style={styles.header}>
-        <Text style={styles.titulo}>Contactos de Emergência</Text>
+      <View style={styles.container}>
+        <Text style={[styles.titulo, { marginBottom: 20 }]}>Contactos de Emergência</Text>
         <Text style={styles.subtitulo}>Quem será avisado primeiro</Text>
       </View>
 

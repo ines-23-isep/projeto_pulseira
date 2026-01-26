@@ -5,10 +5,11 @@ import { database } from "../firebase/firebaseConfig";
 export function useAuth() {
   const [user, setUser] = useState(null);
   const [doente, setDoente] = useState(null);
+  const [pulseira, setPulseira] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar se já existe cuidador e doente
+    // Verificar se já existe cuidador, doente e pulseira
     const checkExistingData = async () => {
       try {
         // Verificar cuidador
@@ -17,14 +18,37 @@ export function useAuth() {
         
         if (cuidadorSnapshot.exists()) {
           const cuidadorData = cuidadorSnapshot.val();
-          setUser(cuidadorData);
+          console.log("Cuidador encontrado:", cuidadorData);
+          // Firebase retorna um objeto com IDs como chaves, precisamos extrair o primeiro valor
+          const cuidadorId = Object.keys(cuidadorData)[0];
+          const cuidadorInfo = cuidadorData[cuidadorId];
+          console.log("ID do cuidador:", cuidadorId);
+          console.log("Info do cuidador:", cuidadorInfo);
+          setUser({ ...cuidadorInfo, id: cuidadorId });
           
           // Verificar doente
           const doenteRef = ref(database, "doente");
           const doenteSnapshot = await get(doenteRef);
           
           if (doenteSnapshot.exists()) {
-            setDoente(doenteSnapshot.val());
+            const doenteData = doenteSnapshot.val();
+            console.log("Doente encontrado:", doenteData);
+            // Extrair o primeiro doente
+            const doenteId = Object.keys(doenteData)[0];
+            const doenteInfo = doenteData[doenteId];
+            console.log("ID do doente:", doenteId);
+            console.log("Info do doente:", doenteInfo);
+            setDoente({ ...doenteInfo, id: doenteId });
+            
+            // Verificar pulseira
+            const pulseiraRef = ref(database, "pulseira");
+            const pulseiraSnapshot = await get(pulseiraRef);
+            
+            if (pulseiraSnapshot.exists()) {
+              const pulseiraData = pulseiraSnapshot.val();
+              console.log("Pulseira encontrada:", pulseiraData);
+              setPulseira(pulseiraData);
+            }
           }
         }
       } catch (error) {
@@ -49,6 +73,7 @@ export function useAuth() {
     }
 
     // Registro de novo cuidador
+    const cuidadorId = push(cuidadorRef).key;
     const cuidadorData = {
       email,
       password, // Em produção, usar hash
@@ -56,10 +81,10 @@ export function useAuth() {
       telemovel,
       relacao,
       dataRegistro: new Date().toISOString(),
-      id: push(cuidadorRef).key
+      id: cuidadorId
     };
 
-    await set(ref(database, `cuidador/${cuidadorData.id}`), cuidadorData);
+    await set(ref(database, `cuidador/${cuidadorId}`), cuidadorData);
     
     // Adicionar cuidador como contacto de emergência principal
     const contactoData = {
@@ -79,29 +104,79 @@ export function useAuth() {
 
   async function registrarDoente(form) {
     const doenteRef = ref(database, "doente");
+    const doenteId = push(doenteRef).key;
     const doenteData = {
       ...form,
       idade: parseInt(form.idade),
       dataRegistro: new Date().toISOString(),
-      cuidadorId: user.id
+      cuidadorId: user.id,
+      id: doenteId
     };
 
-    await set(doenteRef, doenteData);
+    await set(ref(database, `doente/${doenteId}`), doenteData);
     setDoente(doenteData);
     return { success: true };
+  }
+
+  async function associarPulseira(form) {
+    const { codigoPulseira, nomePulseira } = form;
+    
+    try {
+      // Validar dados de entrada
+      if (!codigoPulseira || !codigoPulseira.trim()) {
+        throw new Error("Código da pulseira é obrigatório");
+      }
+      
+      if (!nomePulseira || !nomePulseira.trim()) {
+        throw new Error("Nome da pulseira é obrigatório");
+      }
+
+      // Verificar se já existe pulseira associada
+      const pulseiraRef = ref(database, "pulseira");
+      const snapshot = await get(pulseiraRef);
+      
+      if (snapshot.exists()) {
+        const existingData = snapshot.val();
+        console.log("Pulseira já existe:", existingData);
+        throw new Error("Já existe uma pulseira associada. Código: " + existingData.codigo);
+      }
+
+      // Associar nova pulseira
+      const pulseiraData = {
+        codigo: codigoPulseira.toUpperCase().trim(),
+        nome: nomePulseira.trim(),
+        dataAssociacao: new Date().toISOString(),
+        cuidadorId: user.id,
+        doenteId: doente.id
+      };
+
+      console.log("A associar pulseira:", pulseiraData);
+      
+      await set(pulseiraRef, pulseiraData);
+      setPulseira(pulseiraData);
+      
+      console.log("Pulseira associada com sucesso!");
+      return { success: true };
+    } catch (error) {
+      console.error("Erro detalhado ao associar pulseira:", error);
+      throw error;
+    }
   }
 
   function logout() {
     setUser(null);
     setDoente(null);
+    setPulseira(null);
   }
 
   return {
     user,
     doente,
+    pulseira,
     isLoading,
     registrarCuidador,
     registrarDoente,
+    associarPulseira,
     logout
   };
 }
