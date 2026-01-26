@@ -273,14 +273,22 @@ function mostrarMensagemSucesso(texto) {
         
         {/* Cabeçalho */}
         <View style={styles.header}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>👤</Text>
+          <View style={styles.headerTopo}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>👤</Text>
+              </View>
+              <View>
+                <Text style={styles.saudacao}>Olá, Utilizador</Text>
+                <Text style={styles.dataAtual}>{new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
+              </View>
             </View>
-            <View>
-              <Text style={styles.saudacao}>Olá, Utilizador</Text>
-              <Text style={styles.dataAtual}>{new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
-            </View>
+            <TouchableOpacity
+              style={styles.botaoDefinicoesHeader}
+              onPress={() => setPagina("definicoes")}
+            >
+              <Text style={styles.botaoDefinicoesHeaderTexto}>⚙️</Text>
+            </TouchableOpacity>
           </View>
           <Text style={styles.titulo}>Monitorização em Tempo Real</Text>
           <Text style={styles.subtitulo}>Acompanhe todas as atividades</Text>
@@ -358,7 +366,7 @@ function mostrarMensagemSucesso(texto) {
           </View>
         </View>
 
-        {/* Navegação */}
+        {/* NAVEGAÇÃO */}
         <View style={styles.botoesContainer}>
           <View style={styles.botoesLinha}>
             <View style={styles.botaoWrapper}>
@@ -788,7 +796,31 @@ function mostrarMensagemSucesso(texto) {
       )}
     </ScrollView>
   );
-}
+  }
+
+  // ---------------- DEFINIÇÕES ----------------
+  if (pagina === "definicoes") {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.titulo}>Definições</Text>
+          <Text style={styles.subtitulo}>Configurações da aplicação</Text>
+        </View>
+
+        <View style={styles.definicoesContainer}>
+          <Text style={styles.definicoesVazio}>Página de definições em desenvolvimento</Text>
+          <Text style={styles.definicoesSubtexto}>Em breve poderá configurar as definições aqui</Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setPagina("dashboard")}
+        >
+          <Text style={styles.botaoVoltarTexto}>← Voltar ao Painel</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
 }
 const styles = StyleSheet.create({
@@ -801,10 +833,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 25,
   },
+  headerTopo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   avatarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
   },
   avatar: {
     width: 50,
@@ -817,6 +854,19 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontSize: 24,
+  },
+  botaoDefinicoesHeader: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  botaoDefinicoesHeaderTexto: {
+    fontSize: 20,
   },
   saudacao: {
     fontSize: 16,
@@ -1634,5 +1684,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#3b82f6',
     fontWeight: '700',
+  },
+
+  // ESTILOS DA PÁGINA DE DEFINIÇÕES
+  definicoesContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  definicoesVazio: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  definicoesSubtexto: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
   },
 });
