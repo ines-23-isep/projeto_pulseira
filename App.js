@@ -74,8 +74,12 @@ useEffect(() => {
   // ---------------- DASHBOARD ----------------
   if (pagina === "dashboard") {
     return (
-      <View style={styles.container}>
-        <StatusBar style="dark" />
+      <ScrollView
+      style={{ flex: 1, backgroundColor: "#f8fafc" }}
+      contentContainerStyle={{ padding: 20, flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <StatusBar style="dark" />
         
         {/* Cabeçalho */}
         <View style={styles.header}>
@@ -167,21 +171,35 @@ useEffect(() => {
         {/* Navegação */}
         <View style={styles.botoesContainer}>
           <View style={styles.botoesLinha}>
-            <TouchableOpacity
-              style={styles.botao}
-              onPress={() => setPagina("historico")}
-            >
-              <Text style={styles.botaoTexto}>📋 Histórico</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.botaoSecundario}
-              onPress={() => setPagina("alertas")}
-            >
-              <Text style={styles.botaoSecundarioTexto}>🔔 Alertas</Text>
-            </TouchableOpacity>
+            <View style={styles.botaoWrapper}>
+              <TouchableOpacity
+                style={styles.botao}
+                onPress={() => setPagina("historico")}
+              >
+                <Text style={styles.botaoTexto}>📋 Histórico</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.botaoWrapper}>
+              <TouchableOpacity
+                style={styles.botaoSecundario}
+                onPress={() => setPagina("alertas")}
+              >
+                <Text style={styles.botaoSecundarioTexto}>🔔 Alertas</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={[styles.botoesLinha, {marginTop: 10}]}>
+            <View style={styles.botaoWrapper}>
+              <TouchableOpacity
+                style={[styles.botao, {width: '100%'}]}
+                onPress={() => setPagina("contatos")}
+              >
+                <Text style={styles.botaoTexto}>📞 Contatos de Emergência</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+    </ScrollView>
     );
   }
   // ---------------- ALERTAS ----------------
@@ -247,36 +265,63 @@ useEffect(() => {
   }
 
   // ---------------- HISTÓRICO ----------------
-  return (
-    <View style={styles.container}>
-      <View style={[styles.container, { paddingTop: 40 }]}>
-        <Text style={[styles.titulo, { marginBottom: 20 }]}>Histórico de Movimentos</Text>
-        <Text style={styles.subtitulo}>Registos recentes</Text>
+  if (pagina === "historico") {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: 40 }]}>
+          <Text style={[styles.titulo, { marginBottom: 20 }]}>Histórico de Movimentos</Text>
+          <Text style={styles.subtitulo}>Registos recentes</Text>
 
-        <ScrollView>
-          {historicoMovimentos.length === 0 ? (
-            <Text style={{ color: "#6b7280", textAlign: "center", marginTop: 20 }}>
-              Nenhum movimento registado.
-            </Text>
-          ) : (
-            historicoMovimentos.map((item) => (
-              <View key={item.id} style={styles.cardHistorico}>
-                <Text style={styles.historicoTexto}>{item.texto}</Text>
-                <Text style={styles.historicoHora}>{item.hora}</Text>
-              </View>
-            ))
-          )}
-        </ScrollView>
+          <ScrollView>
+            {historicoMovimentos.length === 0 ? (
+              <Text style={{ color: "#6b7280", textAlign: "center", marginTop: 20 }}>
+                Nenhum movimento registado.
+              </Text>
+            ) : (
+              historicoMovimentos.map((item) => (
+                <View key={item.id} style={styles.cardHistorico}>
+                  <Text style={styles.historicoTexto}>{item.texto}</Text>
+                  <Text style={styles.historicoHora}>{item.hora}</Text>
+                </View>
+              ))
+            )}
+          </ScrollView>
 
-        <TouchableOpacity
-          style={styles.botaoVoltar}
-          onPress={() => setPagina("dashboard")}
-        >
-          <Text style={styles.botaoTexto}>Voltar</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.botaoVoltar}
+            onPress={() => setPagina("dashboard")}
+          >
+            <Text style={styles.botaoTexto}>Voltar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
+
+  // ---------------- CONTATOS DE EMERGÊNCIA ----------------
+  if (pagina === "contatos") {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: 40 }]}>
+          <Text style={[styles.titulo, { marginBottom: 20 }]}>Contatos de Emergência</Text>
+          <Text style={styles.subtitulo}>Lista de contatos importantes</Text>
+
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ color: "#6b7280", textAlign: "center", marginTop: 20 }}>
+              Página em desenvolvimento
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.botaoVoltar}
+            onPress={() => setPagina("dashboard")}
+          >
+            <Text style={styles.botaoTexto}>Voltar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -443,39 +488,39 @@ const styles = StyleSheet.create({
 
   // BOTÕES
   botoesContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    width: '100%',
     marginTop: 20,
-    flexWrap: "wrap",
+    marginBottom: 20,
   },
   botoesLinha: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  botaoWrapper: {
+    width: '48%',
   },
   botao: {
     backgroundColor: "#4f46e5",
     padding: 18,
     borderRadius: 16,
-    width: "48%",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#4f46e5",
-    shadowOffset: { width: 0, height: 5 },
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 5,
   },
   botaoSecundario: {
-    backgroundColor: "#f1f5f9",
-    padding: 18,
-    borderRadius: 16,
-    width: "48%",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#f1f5f9',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+    width: '100%',
+    minHeight: 60,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: '#e2e8f0',
   },
   botaoTexto: {
     color: "#ffffff",
