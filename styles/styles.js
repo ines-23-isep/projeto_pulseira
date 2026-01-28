@@ -411,8 +411,9 @@ const styles = StyleSheet.create({
   // ESTADO
   estadoCard: {
     borderRadius: 20,
-    padding: 22,
+    padding: 25,
     marginBottom: 20,
+    minHeight: 120,
     backgroundColor: "#4f46e5",
   },
   estadoIconeContainer: {
@@ -430,13 +431,16 @@ const styles = StyleSheet.create({
   estadoDetalhes: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginTop: 4,
   },
   estadoDetalhesTexto: {
     color: '#e0e7ff',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '500',
+    textAlign: 'left',
   },
   estadoTexto: {
     color: "#e0e7ff",

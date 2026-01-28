@@ -9,6 +9,8 @@ export function useFirebaseData() {
   const [quedas, setQuedas] = useState([]);
   const [quedaDetetadaAgora, setQuedaDetetadaAgora] = useState(false);
   const [ultimaQuedaCount, setUltimaQuedaCount] = useState(0);
+  const [estadoAtual, setEstadoAtual] = useState("Normal");
+  const [textoAtualizacao, setTextoAtualizacao] = useState("Atualizado agora");
 
   useEffect(() => {
     const referencia = ref(database, "historico/pulseira001");
@@ -75,17 +77,56 @@ export function useFirebaseData() {
           ...dados[key],
         }));
 
-        // Para teste: mostrar alerta sempre que há quedas
-        console.log("Verificando quedas - lista.length:", lista.length, "ultimaQuedaCount:", ultimaQuedaCount);
-        if (lista.length > 0) {
-          console.log("Quedas encontradas! Ativando alerta para teste...");
+        // Verificar quedas na última hora
+        const verificarQuedasUltimaHora = (quedasLista) => {
+          const agora = new Date();
+          const umaHoraAtras = new Date(agora.getTime() - 60 * 60 * 1000);
+          
+          for (const queda of quedasLista) {
+            if (queda.timestamp) {
+              // Tentar parse do timestamp no formato "dd/mm/yyyy hh:mm:ss"
+              const partes = queda.timestamp.split(' ');
+              if (partes.length === 2) {
+                const dataPartes = partes[0].split('/');
+                const horaPartes = partes[1].split(':');
+                
+                if (dataPartes.length === 3 && horaPartes.length === 3) {
+                  const dataQueda = new Date(
+                    parseInt(dataPartes[2]), // ano
+                    parseInt(dataPartes[1]) - 1, // mês (0-11)
+                    parseInt(dataPartes[0]), // dia
+                    parseInt(horaPartes[0]), // hora
+                    parseInt(horaPartes[1]), // minuto
+                    parseInt(horaPartes[2]) // segundo
+                  );
+                  
+                  if (dataQueda >= umaHoraAtras && dataQueda <= agora) {
+                    return true; // Encontrou queda na última hora
+                  }
+                }
+              }
+            }
+          }
+          return false; // Não há quedas na última hora
+        };
+
+        // Verificar se há nova queda (após a primeira carga)
+        if (lista.length > ultimaQuedaCount && ultimaQuedaCount > 0) {
           setQuedaDetetadaAgora(true);
           // Auto-ocultar alerta após 5 segundos
           setTimeout(() => {
             setQuedaDetetadaAgora(false);
           }, 5000);
+        }
+
+        // Verificar estado baseado em quedas da última hora
+        const temQuedaUltimaHora = verificarQuedasUltimaHora(lista);
+        if (temQuedaUltimaHora) {
+          setEstadoAtual("Queda Detetada");
+          setTextoAtualizacao("Atualizado na última hora");
         } else {
-          console.log("Nenhuma queda encontrada");
+          setEstadoAtual("Normal");
+          setTextoAtualizacao("Atualizado na última hora");
         }
 
         setQuedas(lista.reverse());
@@ -97,5 +138,5 @@ export function useFirebaseData() {
     });
   }, []);
 
-  return { historicoMovimentos, alertas, contactos, quedas, quedaDetetadaAgora };
+  return { historicoMovimentos, alertas, contactos, quedas, quedaDetetadaAgora, estadoAtual, textoAtualizacao };
 }

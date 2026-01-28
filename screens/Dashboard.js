@@ -2,12 +2,10 @@ import { ScrollView, View, Text, TouchableOpacity, StatusBar, Alert } from "reac
 
 import { useEffect } from "react";
 
-export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado, quedaDetetadaAgora }) {
+export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado, quedaDetetadaAgora, estadoAtual, textoAtualizacao }) {
   
   useEffect(() => {
-    console.log("useEffect do alerta - quedaDetetadaAgora:", quedaDetetadaAgora);
     if (quedaDetetadaAgora) {
-      console.log("Mostrando alerta de queda...");
       Alert.alert(
         "⚠️ Queda Detetada!",
         "Foi detetada uma queda agora. Verifique o histórico para mais detalhes.",
@@ -60,25 +58,23 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
 
       {/* Cartão de Status */}
       <View style={[styles.estadoCard, { 
-        backgroundColor: corEstado(),
-        shadowColor: corEstado(),
+        backgroundColor: corEstado(estadoAtual),
+        shadowColor: corEstado(estadoAtual),
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.2,
         shadowRadius: 15,
         elevation: 5,
       }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={styles.estadoIconeContainer}>
-              <Text style={styles.estadoIcone}>{iconeEstado()}</Text>
-            </View>
-            <View style={{ marginLeft: 15 }}>
-              <Text style={styles.estadoTexto}>Estado Atual</Text>
-              <Text style={styles.estadoValor}>{estado}</Text>
-            </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={styles.estadoIconeContainer}>
+            <Text style={styles.estadoIcone}>{iconeEstado(estadoAtual)}</Text>
           </View>
-          <View style={styles.estadoDetalhes}>
-            <Text style={styles.estadoDetalhesTexto}>Atualizado agora</Text>
+          <View style={{ marginLeft: 15, flex: 1 }}>
+            <Text style={styles.estadoTexto}>Estado Atual</Text>
+            <Text style={styles.estadoValor}>{estadoAtual}</Text>
+            <View style={styles.estadoDetalhes}>
+              <Text style={styles.estadoDetalhesTexto}>{textoAtualizacao}</Text>
+            </View>
           </View>
         </View>
       </View>
