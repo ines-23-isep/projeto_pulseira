@@ -531,10 +531,10 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   botao: {
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#1565c0",
     padding: 20,
     borderRadius: 18,
-    shadowColor: "#4f46e5",
+    shadowColor: "#1565c0",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
     shadowRadius: 12,

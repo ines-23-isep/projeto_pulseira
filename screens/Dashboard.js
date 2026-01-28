@@ -1,6 +1,6 @@
 import { ScrollView, View, Text, TouchableOpacity, StatusBar, Alert } from "react-native";
-
 import { useEffect } from "react";
+import { MaterialIcons, FontAwesome5, Ionicons } from "@expo/vector-icons";
 
 export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado, quedaDetetadaAgora, estadoAtual, textoAtualizacao, user }) {
   
@@ -38,7 +38,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
         <View style={styles.headerTopo}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>👤</Text>
+              <MaterialIcons name="person" size={32} color="#64748b" />
             </View>
             <View>
               <Text style={styles.saudacao}>Olá, {user?.nome || 'Utilizador'}</Text>
@@ -49,7 +49,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
             style={styles.botaoDefinicoesHeader}
             onPress={() => setPagina("definicoes")}
           >
-            <Text style={styles.botaoDefinicoesHeaderTexto}>⚙️</Text>
+            <Ionicons name="settings-outline" size={24} color="#64748b" />
           </TouchableOpacity>
         </View>
         <Text style={styles.titulo}>Monitorização em</Text>
@@ -67,7 +67,11 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
       }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View style={styles.estadoIconeContainer}>
-            <Text style={styles.estadoIcone}>{iconeEstado(estadoAtual)}</Text>
+            {estadoAtual === "Queda Detetada" ? (
+              <FontAwesome5 name="exclamation-triangle" size={28} color="#ffffff" />
+            ) : (
+              <MaterialIcons name="check-circle" size={28} color="#ffffff" />
+            )}
           </View>
           <View style={{ marginLeft: 15, flex: 1 }}>
             <Text style={styles.estadoTexto}>Estado Atual</Text>
@@ -84,7 +88,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
         {/* Card Batimentos Cardíacos */}
         <View style={[styles.card, styles.cardElevated]}>
           <View style={styles.cardIconContainer}>
-            <Text style={styles.cardIcon}>❤️</Text>
+            <FontAwesome5 name="heartbeat" size={22} color="#ef4444" />
           </View>
           <Text style={styles.cardTitulo}>Batimentos</Text>
           <Text style={styles.cardValor}>72 <Text style={styles.cardUnidade}>bpm</Text></Text>
@@ -97,7 +101,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
         {/* Card Oxigenação */}
         <View style={[styles.card, styles.cardElevated]}>
           <View style={styles.cardIconContainer}>
-            <Text style={styles.cardIcon}>🫁</Text>
+            <FontAwesome5 name="lungs" size={22} color="#3b82f6" />
           </View>
           <Text style={styles.cardTitulo}>Oxigenação</Text>
           <Text style={styles.cardValor}>{95 + Math.floor(Math.random() * 5)} <Text style={styles.cardUnidade}>%</Text></Text>
@@ -117,7 +121,10 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
               style={styles.botao}
               onPress={() => setPagina("historico")}
             >
-              <Text style={[styles.botaoTexto, {textAlign: 'center'}]}>📋 Histórico de Quedas</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <MaterialIcons name="history" size={22} color="#ffffff" style={{ marginRight: 1 }} />
+                <Text style={[styles.botaoTexto, {textAlign: 'center'}]}>Histórico de Quedas</Text>
+              </View>
             </TouchableOpacity>
           </View>
           <View style={styles.botaoWrapper}>
@@ -125,7 +132,10 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
               style={styles.botao}
               onPress={() => setPagina("contactos")}
             >
-              <Text style={[styles.botaoTexto, {textAlign: 'center'}]}>📞 Contactos de Emergência</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <MaterialIcons name="phone" size={22} color="#ffffff" style={{ marginRight: 1 }} />
+                <Text style={[styles.botaoTexto, {textAlign: 'center'}]}>Contactos de Emergência</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
