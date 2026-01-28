@@ -2,7 +2,7 @@ import { ScrollView, View, Text, TouchableOpacity, StatusBar, Alert } from "reac
 
 import { useEffect } from "react";
 
-export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado, quedaDetetadaAgora, estadoAtual, textoAtualizacao }) {
+export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado, quedaDetetadaAgora, estadoAtual, textoAtualizacao, user }) {
   
   useEffect(() => {
     if (quedaDetetadaAgora) {
@@ -41,7 +41,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
               <Text style={styles.avatarText}>👤</Text>
             </View>
             <View>
-              <Text style={styles.saudacao}>Olá, Utilizador</Text>
+              <Text style={styles.saudacao}>Olá, {user?.nome || 'Utilizador'}</Text>
               <Text style={styles.dataAtual}>{new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
             </View>
           </View>
