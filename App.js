@@ -30,7 +30,7 @@ export default function App() {
   const { user, doente, pulseira, isLoading, registrarCuidador, registrarDoente, associarPulseira, atualizarCuidador, atualizarDoente } = useAuth();
   
   // Usar hooks personalizados (só se estiver autenticado)
-  const { historicoMovimentos, alertas, contactos, quedas } = useFirebaseData();
+  const { historicoMovimentos, alertas, contactos, quedas, quedaDetetadaAgora } = useFirebaseData();
   const {
     form,
     setForm,
@@ -97,6 +97,7 @@ export default function App() {
           iconeEstado={iconeEstado}
           doente={doente}
           user={user}
+          quedaDetetadaAgora={quedaDetetadaAgora}
         />
       );
     }

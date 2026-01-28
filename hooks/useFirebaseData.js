@@ -7,6 +7,8 @@ export function useFirebaseData() {
   const [alertas, setAlertas] = useState([]);
   const [contactos, setContactos] = useState([]);
   const [quedas, setQuedas] = useState([]);
+  const [quedaDetetadaAgora, setQuedaDetetadaAgora] = useState(false);
+  const [ultimaQuedaCount, setUltimaQuedaCount] = useState(0);
 
   useEffect(() => {
     const referencia = ref(database, "historico/pulseira001");
@@ -73,12 +75,27 @@ export function useFirebaseData() {
           ...dados[key],
         }));
 
+        // Para teste: mostrar alerta sempre que há quedas
+        console.log("Verificando quedas - lista.length:", lista.length, "ultimaQuedaCount:", ultimaQuedaCount);
+        if (lista.length > 0) {
+          console.log("Quedas encontradas! Ativando alerta para teste...");
+          setQuedaDetetadaAgora(true);
+          // Auto-ocultar alerta após 5 segundos
+          setTimeout(() => {
+            setQuedaDetetadaAgora(false);
+          }, 5000);
+        } else {
+          console.log("Nenhuma queda encontrada");
+        }
+
         setQuedas(lista.reverse());
+        setUltimaQuedaCount(lista.length);
       } else {
         setQuedas([]);
+        setUltimaQuedaCount(0);
       }
     });
   }, []);
 
-  return { historicoMovimentos, alertas, contactos, quedas };
+  return { historicoMovimentos, alertas, contactos, quedas, quedaDetetadaAgora };
 }

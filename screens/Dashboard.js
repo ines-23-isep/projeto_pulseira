@@ -1,6 +1,32 @@
-import { ScrollView, View, Text, TouchableOpacity, StatusBar } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity, StatusBar, Alert } from "react-native";
 
-export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado }) {
+import { useEffect } from "react";
+
+export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado, quedaDetetadaAgora }) {
+  
+  useEffect(() => {
+    console.log("useEffect do alerta - quedaDetetadaAgora:", quedaDetetadaAgora);
+    if (quedaDetetadaAgora) {
+      console.log("Mostrando alerta de queda...");
+      Alert.alert(
+        "⚠️ Queda Detetada!",
+        "Foi detetada uma queda agora. Verifique o histórico para mais detalhes.",
+        [
+          {
+            text: "Ver Histórico",
+            onPress: () => setPagina("historico"),
+            style: "default",
+          },
+          {
+            text: "OK",
+            style: "cancel",
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+  }, [quedaDetetadaAgora]);
+
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: "#f8fafc" }}
