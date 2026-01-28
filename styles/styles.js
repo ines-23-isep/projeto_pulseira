@@ -59,12 +59,12 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   loginBotao: {
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#1565c0",
     padding: 18,
     borderRadius: 16,
     alignItems: "center",
     marginTop: 10,
-    shadowColor: "#4f46e5",
+    shadowColor: "#1565c0",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   loginFooterLink: {
     fontSize: 14,
-    color: "#4f46e5",
+    color: "#1565c0",
     fontWeight: "600",
   },
 
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   },
   sexoBotaoSelecionado: {
     backgroundColor: '#4f46e5',
-    borderColor: '#4f46e5',
+    borderColor: '#1565c0',
   },
   sexoBotaoTexto: {
     fontSize: 14,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   condicaoCheckboxSelecionado: {
     backgroundColor: '#4f46e5',
-    borderColor: '#4f46e5',
+    borderColor: '#1565c0',
   },
   condicaoCheck: {
     color: '#ffffff',
@@ -286,9 +286,9 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     marginBottom: 80,
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
   },
   statItem: {
     alignItems: 'center',
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     padding: 25,
     marginBottom: 20,
     minHeight: 120,
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#1565c0",
   },
   estadoIconeContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -584,6 +584,7 @@ const styles = StyleSheet.create({
     color: "#334155",
     fontWeight: "600",
     fontSize: 16,
+    textAlign: 'center',
   },
   
   // Botões de Simulação
@@ -725,7 +726,7 @@ const styles = StyleSheet.create({
   },
 
   botaoVoltar: {
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#1565c0",
     padding: 16,
     borderRadius: 14,
     alignItems: "center",
@@ -884,6 +885,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  botaoSecundario: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 10,
+    alignSelf: 'center',
+    width: '100%',
   },
   botaoDesativado: {
     backgroundColor: '#d1d5db',
