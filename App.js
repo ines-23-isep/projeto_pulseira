@@ -9,7 +9,6 @@ import AssociacaoPulseira from "./screens/AssociacaoPulseira";
 import Dashboard from "./screens/Dashboard";
 import ContactosEmergencia from "./screens/ContactosEmergencia";
 import Historico from "./screens/Historico";
-import Alertas from "./screens/Alertas";
 import Definicoes from "./screens/Definicoes";
 
 // Importar hooks e utilitários
@@ -102,16 +101,7 @@ export default function App() {
       );
     }
 
-    if (pagina === "alertas") {
-      return (
-        <Alertas 
-          setPagina={setPagina}
-          styles={styles}
-          alertas={alertas}
-        />
-      );
-    }
-
+    
     if (pagina === "historico") {
       return (
         <Historico 

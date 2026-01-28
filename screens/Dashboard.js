@@ -1,6 +1,4 @@
 import { ScrollView, View, Text, TouchableOpacity, StatusBar } from "react-native";
-import { sendFakeMovement } from "../services/sendFakeMovement";
-import { sendFakeAlert } from "../services/sendFakeAlert";
 
 export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado }) {
   return (
@@ -85,44 +83,16 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
         </View>
       </View>
 
-      {/* Botões de Simulação (Temporários) */}
-      <View style={styles.simulacaoContainer}>
-        <Text style={styles.simulacaoTitulo}>🔧 Ferramentas de Desenvolvimento</Text>
-        
-        <View style={styles.botoesSimulacao}>
-          <TouchableOpacity
-            style={[styles.botaoSimulacao, {backgroundColor: '#e0f2fe'}]}
-            onPress={sendFakeMovement}
-          >
-            <Text style={[styles.botaoSimulacaoTexto, {color: '#0369a1'}]}>➕ Simular Movimento</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={[styles.botaoSimulacao, {backgroundColor: '#fef3c7'}]}
-            onPress={sendFakeAlert}
-          >
-            <Text style={[styles.botaoSimulacaoTexto, {color: '#92400e'}]}>⚠️ Simular Alerta</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
+      
       {/* NAVEGAÇÃO */}
       <View style={styles.botoesContainer}>
         <View style={styles.botoesLinha}>
           <View style={styles.botaoWrapper}>
             <TouchableOpacity
-              style={styles.botao}
+              style={[styles.botao, {width: '100%'}]}
               onPress={() => setPagina("historico")}
             >
-              <Text style={styles.botaoTexto}>📋 Histórico</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.botaoWrapper}>
-            <TouchableOpacity
-              style={styles.botaoSecundario}
-              onPress={() => setPagina("alertas")}
-            >
-              <Text style={styles.botaoSecundarioTexto}>🔔 Alertas</Text>
+              <Text style={styles.botaoTexto}>📋 Histórico de Quedas</Text>
             </TouchableOpacity>
           </View>
         </View>

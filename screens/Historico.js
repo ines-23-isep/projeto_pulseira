@@ -15,7 +15,7 @@ export default function Historico({ setPagina, styles, quedas }) {
             quedas.map((queda) => (
               <View key={queda.id} style={[styles.cardHistorico, { borderLeftColor: "#dc2626" }]}>
                 <Text style={[styles.historicoTexto, { color: "#dc2626", fontWeight: "bold" }]}>
-                  🚨 {queda.evento || "Queda Detetada"}
+                  🚨 Queda Detetada
                 </Text>
                 <Text style={styles.historicoHora}>
                   {queda.timestamp || new Date(queda.id).toLocaleString()}
