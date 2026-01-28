@@ -89,20 +89,18 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
         <View style={styles.botoesLinha}>
           <View style={styles.botaoWrapper}>
             <TouchableOpacity
-              style={[styles.botao, {width: '100%'}]}
+              style={styles.botao}
               onPress={() => setPagina("historico")}
             >
-              <Text style={styles.botaoTexto}>📋 Histórico de Quedas</Text>
+              <Text style={[styles.botaoTexto, {textAlign: 'center'}]}>📋 Histórico de Quedas</Text>
             </TouchableOpacity>
           </View>
-        </View>
-        <View style={[styles.botoesLinha, {marginTop: 10}]}>
           <View style={styles.botaoWrapper}>
             <TouchableOpacity
-              style={[styles.botao, {width: '100%'}]}
+              style={styles.botao}
               onPress={() => setPagina("contactos")}
             >
-              <Text style={styles.botaoTexto}>📞 Contactos de Emergência</Text>
+              <Text style={[styles.botaoTexto, {textAlign: 'center'}]}>📞 Contactos de Emergência</Text>
             </TouchableOpacity>
           </View>
         </View>
