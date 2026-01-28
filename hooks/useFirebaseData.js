@@ -77,10 +77,10 @@ export function useFirebaseData() {
           ...dados[key],
         }));
 
-        // Verificar quedas na última hora
+        // Verificar quedas nos últimos 30 minutos
         const verificarQuedasUltimaHora = (quedasLista) => {
           const agora = new Date();
-          const umaHoraAtras = new Date(agora.getTime() - 60 * 60 * 1000);
+          const trintaMinutosAtras = new Date(agora.getTime() - 30 * 60 * 1000);
           
           for (const queda of quedasLista) {
             if (queda.timestamp) {
@@ -100,14 +100,14 @@ export function useFirebaseData() {
                     parseInt(horaPartes[2]) // segundo
                   );
                   
-                  if (dataQueda >= umaHoraAtras && dataQueda <= agora) {
-                    return true; // Encontrou queda na última hora
+                  if (dataQueda >= trintaMinutosAtras && dataQueda <= agora) {
+                    return true; // Encontrou queda nos últimos 30 minutos
                   }
                 }
               }
             }
           }
-          return false; // Não há quedas na última hora
+          return false; // Não há quedas nos últimos 30 minutos
         };
 
         // Verificar se há nova queda (após a primeira carga)
@@ -119,14 +119,14 @@ export function useFirebaseData() {
           }, 5000);
         }
 
-        // Verificar estado baseado em quedas da última hora
+        // Verificar estado baseado em quedas nos últimos 30 minutos
         const temQuedaUltimaHora = verificarQuedasUltimaHora(lista);
         if (temQuedaUltimaHora) {
           setEstadoAtual("Queda Detetada");
-          setTextoAtualizacao("Atualizado na última hora");
+          setTextoAtualizacao("Atualizado últimos 30 min");
         } else {
           setEstadoAtual("Normal");
-          setTextoAtualizacao("Atualizado na última hora");
+          setTextoAtualizacao("Atualizado últimos 30 min");
         }
 
         setQuedas(lista.reverse());
