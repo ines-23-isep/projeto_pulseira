@@ -138,7 +138,7 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
       
       <View style={[styles.container, { paddingTop: 40 }]}>
         <Text style={[styles.titulo, { marginBottom: 20 }]}>Definições</Text>
-        <Text style={styles.subtitulo}>Gestão de dados e configurações</Text>
+        <Text style={styles.subtitulo}>Editar Dados</Text>
 
         {/* Mensagem de sucesso */}
         {mensagemSucesso && (
@@ -151,7 +151,7 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
         <View style={styles.cardsContainer}>
           {/* Card Atualizar Cuidador */}
           <TouchableOpacity 
-            style={[styles.card, styles.cardElevated]}
+            style={[styles.card, styles.cardElevated, { flex: 1, minWidth: '45%', marginRight: 10 }]}
             onPress={() => setMostrarModalCuidador(true)}
           >
             <View style={styles.cardIconContainer}>
@@ -166,7 +166,7 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
 
           {/* Card Atualizar Doente */}
           <TouchableOpacity 
-            style={[styles.card, styles.cardElevated]}
+            style={[styles.card, styles.cardElevated, { flex: 1, minWidth: '45%', marginLeft: 10 }]}
             onPress={() => setMostrarModalDoente(true)}
           >
             <View style={styles.cardIconContainer}>
