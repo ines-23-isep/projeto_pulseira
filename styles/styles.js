@@ -392,10 +392,29 @@ const styles = StyleSheet.create({
   botaoDefinicoesHeaderTexto: {
     fontSize: 20,
   },
+  saudacaoContainer: {
+    backgroundColor: '#f8fafc',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   saudacao: {
     fontSize: 16,
     color: '#64748b',
     marginBottom: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   dataAtual: {
     fontSize: 14,
@@ -491,15 +510,16 @@ const styles = StyleSheet.create({
     borderColor: "#f1f5f9",
   },
   cardElevated: {
-    shadowColor: "#3b82f6",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 6,
+      height: 8,
     },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 10,
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 12,
     borderColor: "#e0e7ff",
+    borderWidth: 1,
   },
   cardIconContainer: {
     width: 48,

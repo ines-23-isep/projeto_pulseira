@@ -36,20 +36,22 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
       {/* Cabeçalho */}
       <View style={styles.header}>
         <View style={styles.headerTopo}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <MaterialIcons name="person" size={32} color="#64748b" />
-            </View>
-            <View>
-              <Text style={styles.saudacao}>Olá, {user?.nome || 'Utilizador'}</Text>
-              <Text style={styles.dataAtual}>{new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
+          <View style={styles.saudacaoContainer}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar}>
+                <MaterialIcons name="person" size={32} color="#64748b" />
+              </View>
+              <View>
+                <Text style={styles.saudacao}>Olá, {user?.nome || 'Utilizador'}</Text>
+                <Text style={styles.dataAtual}>{new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
+              </View>
             </View>
           </View>
           <TouchableOpacity
             style={styles.botaoDefinicoesHeader}
             onPress={() => setPagina("definicoes")}
           >
-            <Ionicons name="settings-outline" size={24} color="#64748b" />
+            <Ionicons name="settings-outline" size={28} color="#64748b" />
           </TouchableOpacity>
         </View>
         <Text style={styles.titulo}>Monitorização em</Text>
@@ -83,15 +85,32 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
         </View>
       </View>
 
-      {/* Cards de Informação */}
-      <View style={styles.cardsContainer}>
-        {/* Card Batimentos Cardíacos */}
-        <View style={[styles.card, styles.cardElevated]}>
+      {/* Cartão de Batimentos Cardíacos */}
+      <View style={[styles.card, styles.cardElevated, { marginBottom: 20 }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View style={styles.cardIconContainer}>
             <FontAwesome5 name="heartbeat" size={22} color="#ef4444" />
           </View>
-          <Text style={styles.cardTitulo}>Batimentos</Text>
-          <Text style={styles.cardValor}>72 <Text style={styles.cardUnidade}>bpm</Text></Text>
+          <View style={{ marginLeft: 15, flex: 1 }}>
+            <Text style={styles.cardTitulo}>Batimentos Cardíacos</Text>
+            <Text style={styles.cardValor}>72 <Text style={styles.cardUnidade}>bpm</Text></Text>
+            <View style={styles.cardStatus}>
+              <View style={[styles.statusIndicator, {backgroundColor: '#10b981'}]} />
+              <Text style={styles.cardInfo}>Normal</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Cards de Informação */}
+      <View style={styles.cardsContainer}>
+        {/* Card Temperatura Corporal */}
+        <View style={[styles.card, styles.cardElevated, { flex: 1, minWidth: '45%', marginRight: 10 }]}>
+          <View style={styles.cardIconContainer}>
+            <MaterialIcons name="thermostat" size={22} color="#f59e0b" />
+          </View>
+          <Text style={styles.cardTitulo}>Temperatura</Text>
+          <Text style={styles.cardValor}>36.5 <Text style={styles.cardUnidade}>°C</Text></Text>
           <View style={styles.cardStatus}>
             <View style={[styles.statusIndicator, {backgroundColor: '#10b981'}]} />
             <Text style={styles.cardInfo}>Normal</Text>
@@ -99,7 +118,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
         </View>
 
         {/* Card Oxigenação */}
-        <View style={[styles.card, styles.cardElevated]}>
+        <View style={[styles.card, styles.cardElevated, { flex: 1, minWidth: '45%', marginLeft: 10 }]}>
           <View style={styles.cardIconContainer}>
             <FontAwesome5 name="lungs" size={22} color="#3b82f6" />
           </View>
