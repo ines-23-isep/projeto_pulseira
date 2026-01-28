@@ -138,5 +138,53 @@ export function useFirebaseData() {
     });
   }, []);
 
+  // Verificação periódica para voltar ao estado normal após 5 minutos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (quedas.length > 0) {
+        // Verificar quedas nos últimos 5 minutos
+        const verificarQuedasUltimaHora = (quedasLista) => {
+          const agora = new Date();
+          const cincoMinutosAtras = new Date(agora.getTime() - 5 * 60 * 1000);
+          
+          for (const queda of quedasLista) {
+            if (queda.timestamp) {
+              // Tentar parse do timestamp no formato "dd/mm/yyyy hh:mm:ss"
+              const partes = queda.timestamp.split(' ');
+              if (partes.length === 2) {
+                const dataPartes = partes[0].split('/');
+                const horaPartes = partes[1].split(':');
+                
+                if (dataPartes.length === 3 && horaPartes.length === 3) {
+                  const dataQueda = new Date(
+                    parseInt(dataPartes[2]), // ano
+                    parseInt(dataPartes[1]) - 1, // mês (0-11)
+                    parseInt(dataPartes[0]), // dia
+                    parseInt(horaPartes[0]), // hora
+                    parseInt(horaPartes[1]), // minuto
+                    parseInt(horaPartes[2]) // segundo
+                  );
+                  
+                  if (dataQueda >= cincoMinutosAtras && dataQueda <= agora) {
+                    return true; // Encontrou queda nos últimos 5 minutos
+                  }
+                }
+              }
+            }
+          }
+          return false; // Não há quedas nos últimos 5 minutos
+        };
+
+        const temQuedaUltimaHora = verificarQuedasUltimaHora(quedas);
+        if (!temQuedaUltimaHora) {
+          setEstadoAtual("Normal");
+          setTextoAtualizacao("Atualizado últimos 5 min");
+        }
+      }
+    }, 60000); // Verificar a cada minuto (60 segundos)
+
+    return () => clearInterval(interval);
+  }, [quedas]);
+
   return { historicoMovimentos, alertas, contactos, quedas, quedaDetetadaAgora, estadoAtual, textoAtualizacao };
 }
