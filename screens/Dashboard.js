@@ -52,8 +52,8 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
             <Text style={styles.botaoDefinicoesHeaderTexto}>⚙️</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.titulo}>Monitorização em Tempo Real</Text>
-        <Text style={styles.subtitulo}>Acompanhe todas as atividades</Text>
+        <Text style={styles.titulo}>Monitorização em</Text>
+        <Text style={styles.subtitulo}>Tempo Real</Text>
       </View>
 
       {/* Cartão de Status */}
@@ -94,14 +94,17 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
           </View>
         </View>
 
-        {/* Card Localização */}
+        {/* Card Oxigenação */}
         <View style={[styles.card, styles.cardElevated]}>
           <View style={styles.cardIconContainer}>
-            <Text style={styles.cardIcon}>📍</Text>
+            <Text style={styles.cardIcon}>🫁</Text>
           </View>
-          <Text style={styles.cardTitulo}>Localização</Text>
-          <Text style={styles.cardValor}>Casa</Text>
-          <Text style={[styles.cardInfo, {marginTop: 4}]}>Porto, Portugal</Text>
+          <Text style={styles.cardTitulo}>Oxigenação</Text>
+          <Text style={styles.cardValor}>{95 + Math.floor(Math.random() * 5)} <Text style={styles.cardUnidade}>%</Text></Text>
+          <View style={styles.cardStatus}>
+            <View style={[styles.statusIndicator, {backgroundColor: '#10b981'}]} />
+            <Text style={styles.cardInfo}>Normal</Text>
+          </View>
         </View>
       </View>
 
