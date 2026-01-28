@@ -1,22 +1,25 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 
-export default function Historico({ setPagina, styles, historicoMovimentos }) {
+export default function Historico({ setPagina, styles, quedas }) {
   return (
     <View style={styles.container}>
       <View style={[styles.container, { paddingTop: 40 }]}>
-        <Text style={[styles.titulo, { marginBottom: 20 }]}>Histórico de Movimentos</Text>
-        <Text style={styles.subtitulo}>Registos recentes</Text>
-
+        <Text style={[styles.titulo, { marginBottom: 20 }]}>Histórico de Quedas</Text>
+        
         <ScrollView>
-          {historicoMovimentos.length === 0 ? (
+          {quedas.length === 0 ? (
             <Text style={{ color: "#6b7280", textAlign: "center", marginTop: 20 }}>
-              Nenhum movimento registado.
+              Nenhuma queda registada.
             </Text>
           ) : (
-            historicoMovimentos.map((item) => (
-              <View key={item.id} style={styles.cardHistorico}>
-                <Text style={styles.historicoTexto}>{item.texto}</Text>
-                <Text style={styles.historicoHora}>{item.hora}</Text>
+            quedas.map((queda) => (
+              <View key={queda.id} style={[styles.cardHistorico, { borderLeftColor: "#dc2626" }]}>
+                <Text style={[styles.historicoTexto, { color: "#dc2626", fontWeight: "bold" }]}>
+                  🚨 {queda.evento || "Queda Detetada"}
+                </Text>
+                <Text style={styles.historicoHora}>
+                  {queda.timestamp || new Date(queda.id).toLocaleString()}
+                </Text>
               </View>
             ))
           )}

@@ -31,7 +31,7 @@ export default function App() {
   const { user, doente, pulseira, isLoading, registrarCuidador, registrarDoente, associarPulseira, atualizarCuidador, atualizarDoente } = useAuth();
   
   // Usar hooks personalizados (só se estiver autenticado)
-  const { historicoMovimentos, alertas, contactos } = useFirebaseData();
+  const { historicoMovimentos, alertas, contactos, quedas } = useFirebaseData();
   const {
     form,
     setForm,
@@ -117,7 +117,7 @@ export default function App() {
         <Historico 
           setPagina={setPagina}
           styles={styles}
-          historicoMovimentos={historicoMovimentos}
+          quedas={quedas}
         />
       );
     }

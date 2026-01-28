@@ -6,6 +6,7 @@ export function useFirebaseData() {
   const [historicoMovimentos, setHistoricoMovimentos] = useState([]);
   const [alertas, setAlertas] = useState([]);
   const [contactos, setContactos] = useState([]);
+  const [quedas, setQuedas] = useState([]);
 
   useEffect(() => {
     const referencia = ref(database, "historico/pulseira001");
@@ -60,5 +61,24 @@ export function useFirebaseData() {
     });
   }, []);
 
-  return { historicoMovimentos, alertas, contactos };
+  useEffect(() => {
+    const refQuedas = ref(database, "quedas");
+
+    onValue(refQuedas, (snapshot) => {
+      const dados = snapshot.val();
+
+      if (dados) {
+        const lista = Object.keys(dados).map((key) => ({
+          id: key,
+          ...dados[key],
+        }));
+
+        setQuedas(lista.reverse());
+      } else {
+        setQuedas([]);
+      }
+    });
+  }, []);
+
+  return { historicoMovimentos, alertas, contactos, quedas };
 }
