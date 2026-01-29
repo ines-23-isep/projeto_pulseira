@@ -10,6 +10,7 @@ import Dashboard from "./screens/Dashboard";
 import ContactosEmergencia from "./screens/ContactosEmergencia";
 import Historico from "./screens/Historico";
 import Definicoes from "./screens/Definicoes";
+import Planos from "./screens/Planos";
 
 // Importar hooks e utilitários
 import { useAuth } from "./hooks/useAuth";
@@ -150,6 +151,15 @@ export default function App() {
           doente={doente}
           atualizarCuidador={atualizarCuidador}
           atualizarDoente={atualizarDoente}
+        />
+      );
+    }
+
+    if (pagina === "planos") {
+      return (
+        <Planos 
+          setPagina={setPagina}
+          styles={styles}
         />
       );
     }

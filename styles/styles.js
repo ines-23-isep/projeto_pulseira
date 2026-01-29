@@ -1255,6 +1255,78 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
+  // ESTILOS DA PÁGINA DE PLANOS
+  planosContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    marginBottom: 30,
+    paddingHorizontal: 4,
+  },
+  planoCard: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 30,
+    marginHorizontal: 6,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: '#f1f5f9',
+    minHeight: 220,
+    justifyContent: 'center',
+  },
+  planoNormal: {
+    borderColor: '#e2e8f0',
+  },
+  planoPremium: {
+    borderColor: '#3b82f6',
+    shadowColor: '#3b82f6',
+    shadowOpacity: 0.2,
+  },
+  planoSelecionado: {
+    backgroundColor: '#f0f9ff',
+    transform: [{ scale: 1.02 }],
+  },
+  planoHeader: {
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  planoIcon: {
+    fontSize: 48,
+    marginBottom: 10,
+  },
+  planoTitulo: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  planoPreço: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#3b82f6',
+    textAlign: 'center',
+  },
+  selecionadoBadge: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  selecionadoTexto: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+
   // ESTILOS DA PÁGINA DE DEFINIÇÕES
   definicoesContainer: {
     flex: 1,

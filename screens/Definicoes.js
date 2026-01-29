@@ -180,6 +180,18 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
           </TouchableOpacity>
         </View>
 
+        {/* Botão Ver o meu plano */}
+        <TouchableOpacity 
+          style={[styles.card, styles.cardElevated, { marginTop: 10 }]}
+          onPress={() => setPagina("planos")}
+        >
+          <View style={styles.cardIconContainer}>
+            <Text style={styles.cardIcon}>📋</Text>
+          </View>
+          <Text style={styles.cardTitulo}>Ver o meu plano</Text>
+          <Text style={styles.cardInfo}>Consulte detalhes do seu plano</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.botaoVoltar}
           onPress={() => setPagina("dashboard")}
