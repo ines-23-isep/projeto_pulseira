@@ -138,7 +138,6 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
       
       <View style={[styles.container, { paddingTop: 40 }]}>
         <Text style={[styles.titulo, { marginBottom: 20 }]}>Definições</Text>
-        <Text style={styles.subtitulo}>Editar Dados</Text>
 
         {/* Mensagem de sucesso */}
         {mensagemSucesso && (
@@ -147,7 +146,9 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
           </View>
         )}
 
-        {/* Cards de opções */}
+        {/* Seção Editar Dados */}
+        <Text style={styles.subtitulo}>Editar Dados</Text>
+        
         <View style={styles.cardsContainer}>
           {/* Card Atualizar Cuidador */}
           <TouchableOpacity 
@@ -180,17 +181,34 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
           </TouchableOpacity>
         </View>
 
-        {/* Botão Ver o meu plano */}
-        <TouchableOpacity 
-          style={[styles.card, styles.cardElevated, { marginTop: 10 }]}
-          onPress={() => setPagina("planos")}
-        >
-          <View style={styles.cardIconContainer}>
-            <Text style={styles.cardIcon}>📋</Text>
-          </View>
-          <Text style={styles.cardTitulo}>Ver o meu plano</Text>
-          <Text style={styles.cardInfo}>Consulte detalhes do seu plano</Text>
-        </TouchableOpacity>
+        {/* Seção Ferramentas */}
+        <Text style={[styles.subtitulo, { marginTop: 25 }]}>Ferramentas</Text>
+        
+        <View style={styles.cardsContainer}>
+          {/* Card Ver o meu plano */}
+          <TouchableOpacity 
+            style={[styles.card, styles.cardElevated, { flex: 1, minWidth: '45%', marginRight: 10 }]}
+            onPress={() => setPagina("planos")}
+          >
+            <View style={styles.cardIconContainer}>
+              <Text style={styles.cardIcon}>📋</Text>
+            </View>
+            <Text style={styles.cardTitulo}>Ver o meu plano</Text>
+            <Text style={styles.cardInfo}>Consulte detalhes</Text>
+          </TouchableOpacity>
+
+          {/* Card Ver histórico */}
+          <TouchableOpacity 
+            style={[styles.card, styles.cardElevated, { flex: 1, minWidth: '45%', marginLeft: 10 }]}
+            onPress={() => setPagina("historico")}
+          >
+            <View style={styles.cardIconContainer}>
+              <Text style={styles.cardIcon}>📊</Text>
+            </View>
+            <Text style={styles.cardTitulo}>Ver histórico</Text>
+            <Text style={styles.cardInfo}>Atividades recentes</Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity
           style={styles.botaoVoltar}

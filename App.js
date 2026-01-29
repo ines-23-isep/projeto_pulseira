@@ -11,6 +11,8 @@ import ContactosEmergencia from "./screens/ContactosEmergencia";
 import Historico from "./screens/Historico";
 import Definicoes from "./screens/Definicoes";
 import Planos from "./screens/Planos";
+import MudarPlano from "./screens/MudarPlano";
+import CompararPlanos from "./screens/CompararPlanos";
 
 // Importar hooks e utilitários
 import { useAuth } from "./hooks/useAuth";
@@ -158,6 +160,24 @@ export default function App() {
     if (pagina === "planos") {
       return (
         <Planos 
+          setPagina={setPagina}
+          styles={styles}
+        />
+      );
+    }
+
+    if (pagina === "mudarPlano") {
+      return (
+        <MudarPlano 
+          setPagina={setPagina}
+          styles={styles}
+        />
+      );
+    }
+
+    if (pagina === "compararPlanos") {
+      return (
+        <CompararPlanos 
           setPagina={setPagina}
           styles={styles}
         />

@@ -24,6 +24,12 @@ export default function Planos({ setPagina, styles }) {
             </View>
             <Text style={styles.planoTitulo}>Plano Normal</Text>
             <Text style={styles.planoPreço}>Gratuito</Text>
+            <View style={styles.planoFeatures}>
+              <Text style={styles.planoFeatureText}>• Monitorização tempo real</Text>
+              <Text style={styles.planoFeatureText}>• Alertas de queda</Text>
+              <Text style={styles.planoFeatureText}>• 2 contactos emergência</Text>
+              <Text style={styles.planoFeatureText}>• 1 pessoa monitorizar</Text>
+            </View>
           </TouchableOpacity>
 
           {/* Plano Premium */}
@@ -39,9 +45,34 @@ export default function Planos({ setPagina, styles }) {
             </View>
             <Text style={styles.planoTitulo}>Plano Premium</Text>
             <Text style={styles.planoPreço}>€9.99/mês</Text>
+            <View style={styles.planoFeatures}>
+              <Text style={styles.planoFeatureText}>• Tudo plano normal</Text>
+              <Text style={styles.planoFeatureText}>• Histórico completo</Text>
+              <Text style={styles.planoFeatureText}>• Contactos ilimitados</Text>
+              <Text style={styles.planoFeatureText}>• Múltiplas pessoas monitorizar</Text>
+            </View>
             <View style={styles.selecionadoBadge}>
               <Text style={styles.selecionadoTexto}>Atual</Text>
             </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Botões de Ação */}
+        <View style={styles.planosBotoesContainer}>
+          <TouchableOpacity
+            style={[styles.planoBotao, styles.planoBotaoPrimario]}
+            onPress={() => {
+              console.log('Botão desativado');
+            }}
+          >
+            <Text style={styles.planoBotaoTexto}>Mudar o meu plano</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.planoBotao, styles.planoBotaoSecundario]}
+            onPress={() => setPagina("compararPlanos")}
+          >
+            <Text style={styles.planoBotaoSecundarioTexto}>Comparar planos</Text>
           </TouchableOpacity>
         </View>
 
