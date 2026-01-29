@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 60,
+    marginBottom: 20,
   },
   brandName: {
     fontSize: 42,
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   estadoCard: {
     borderRadius: 20,
     padding: 25,
-    marginBottom: 20,
+    marginBottom: 15,
     minHeight: 120,
     backgroundColor: "#1565c0",
   },
