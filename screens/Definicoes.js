@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, TextInput, StatusBar, Modal } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Definicoes({ setPagina, styles, user, doente, atualizarCuidador, atualizarDoente }) {
   const [mostrarModalCuidador, setMostrarModalCuidador] = useState(false);
@@ -156,7 +157,7 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
             onPress={() => setMostrarModalCuidador(true)}
           >
             <View style={styles.cardIconContainer}>
-              <Text style={styles.cardIcon}>👤</Text>
+              <MaterialIcons name="person-outline" size={32} color="#6366f1" />
             </View>
             <Text style={styles.cardTitulo}>Atualizar Cuidador</Text>
             <Text style={styles.cardInfo}>{user?.nome || "Carregando..."}</Text>
@@ -171,7 +172,7 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
             onPress={() => setMostrarModalDoente(true)}
           >
             <View style={styles.cardIconContainer}>
-              <Text style={styles.cardIcon}>🏥</Text>
+              <MaterialIcons name="health-and-safety" size={32} color="#ec4899" />
             </View>
             <Text style={styles.cardTitulo}>Atualizar Doente</Text>
             <Text style={styles.cardInfo}>{doente?.nome || "Carregando..."}</Text>
@@ -191,22 +192,10 @@ export default function Definicoes({ setPagina, styles, user, doente, atualizarC
             onPress={() => setPagina("planos")}
           >
             <View style={styles.cardIconContainer}>
-              <Text style={styles.cardIcon}>📋</Text>
+              <MaterialIcons name="workspace-premium" size={32} color="#f59e0b" />
             </View>
             <Text style={styles.cardTitulo}>Ver o meu plano</Text>
             <Text style={styles.cardInfo}>Consulte detalhes</Text>
-          </TouchableOpacity>
-
-          {/* Card Ver histórico */}
-          <TouchableOpacity 
-            style={[styles.card, styles.cardElevated, { flex: 1, minWidth: '45%', marginLeft: 10 }]}
-            onPress={() => setPagina("historico")}
-          >
-            <View style={styles.cardIconContainer}>
-              <Text style={styles.cardIcon}>📊</Text>
-            </View>
-            <Text style={styles.cardTitulo}>Ver histórico</Text>
-            <Text style={styles.cardInfo}>Atividades recentes</Text>
           </TouchableOpacity>
         </View>
 

@@ -142,7 +142,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <MaterialIcons name="history" size={22} color="#ffffff" style={{ marginRight: 1 }} />
-                <Text style={[styles.botaoTexto, {textAlign: 'center'}]}>Histórico de Quedas</Text>
+                <Text style={[styles.botaoTexto, {textAlign: 'center'}]}>Histórico Completo</Text>
               </View>
             </TouchableOpacity>
           </View>

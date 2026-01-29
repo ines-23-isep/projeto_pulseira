@@ -17,6 +17,9 @@ export function useFirebaseData() {
     tempC: "36.5 ºC",
     timestamp: "Atualizado agora"
   });
+  const [historicoBatimentos, setHistoricoBatimentos] = useState([]);
+  const [historicoTemperatura, setHistoricoTemperatura] = useState([]);
+  const [historicoOxigenacao, setHistoricoOxigenacao] = useState([]);
 
   useEffect(() => {
     const referencia = ref(database, "historico/pulseira001");
@@ -78,39 +81,81 @@ export function useFirebaseData() {
       const dados = snapshot.val();
 
       if (dados) {
-        // Obter todos os batimentos e encontrar o mais recente
+        // Obter todos os batimentos
         const lista = Object.keys(dados).map((key) => ({
           id: key,
           ...dados[key],
         }));
 
+        // Função para converter timestamp
+        const parseTimestamp = (timestamp) => {
+          const partes = timestamp.split(' ');
+          if (partes.length === 2) {
+            const dataPartes = partes[0].split('/');
+            const horaPartes = partes[1].split(':');
+            
+            if (dataPartes.length === 3 && horaPartes.length === 3) {
+              return new Date(
+                parseInt(dataPartes[2]), // ano
+                parseInt(dataPartes[1]) - 1, // mês (0-11)
+                parseInt(dataPartes[0]), // dia
+                parseInt(horaPartes[0]), // hora
+                parseInt(horaPartes[1]), // minuto
+                parseInt(horaPartes[2]) // segundo
+              );
+            }
+          }
+          return new Date(0);
+        };
+
         // Ordenar por timestamp (mais recente primeiro)
         lista.sort((a, b) => {
-          // Converter timestamp "dd/mm/yyyy hh:mm:ss" para Date
-          const parseTimestamp = (timestamp) => {
-            const partes = timestamp.split(' ');
-            if (partes.length === 2) {
-              const dataPartes = partes[0].split('/');
-              const horaPartes = partes[1].split(':');
-              
-              if (dataPartes.length === 3 && horaPartes.length === 3) {
-                return new Date(
-                  parseInt(dataPartes[2]), // ano
-                  parseInt(dataPartes[1]) - 1, // mês (0-11)
-                  parseInt(dataPartes[0]), // dia
-                  parseInt(horaPartes[0]), // hora
-                  parseInt(horaPartes[1]), // minuto
-                  parseInt(horaPartes[2]) // segundo
-                );
-              }
-            }
-            return new Date(0);
-          };
-
           return parseTimestamp(b.timestamp) - parseTimestamp(a.timestamp);
         });
 
-        // Pegar o mais recente
+        // Filtrar últimos 48 horas
+        const agora = new Date();
+        const quarentaOitoHorasAtras = new Date(agora.getTime() - 48 * 60 * 60 * 1000);
+        
+        const historicoUltimas48h = lista.filter(item => {
+          const dataItem = parseTimestamp(item.timestamp);
+          return dataItem >= quarentaOitoHorasAtras && dataItem <= agora;
+        });
+
+        // Separar por tipo de dado
+        const historicoBpm = historicoUltimas48h
+          .filter(item => item.bpm)
+          .map(item => ({
+            id: item.id,
+            valor: item.bpm,
+            timestamp: item.timestamp,
+            data: parseTimestamp(item.timestamp)
+          }));
+
+        const historicoTemp = historicoUltimas48h
+          .filter(item => item.tempC)
+          .map(item => ({
+            id: item.id,
+            valor: item.tempC,
+            timestamp: item.timestamp,
+            data: parseTimestamp(item.timestamp)
+          }));
+
+        const historicoSpo2 = historicoUltimas48h
+          .filter(item => item.spo2)
+          .map(item => ({
+            id: item.id,
+            valor: item.spo2,
+            timestamp: item.timestamp,
+            data: parseTimestamp(item.timestamp)
+          }));
+
+        // Atualizar estados
+        setHistoricoBatimentos(historicoBpm);
+        setHistoricoTemperatura(historicoTemp);
+        setHistoricoOxigenacao(historicoSpo2);
+
+        // Manter lógica original para o mais recente
         if (lista.length > 0) {
           const maisRecente = lista[0];
           setDadosBatimentos({
@@ -245,5 +290,17 @@ export function useFirebaseData() {
     return () => clearInterval(interval);
   }, [quedas]);
 
-  return { historicoMovimentos, alertas, contactos, quedas, quedaDetetadaAgora, estadoAtual, textoAtualizacao, dadosBatimentos };
+  return { 
+    historicoMovimentos, 
+    alertas, 
+    contactos, 
+    quedas, 
+    quedaDetetadaAgora, 
+    estadoAtual, 
+    textoAtualizacao, 
+    dadosBatimentos,
+    historicoBatimentos,
+    historicoTemperatura,
+    historicoOxigenacao
+  };
 }
