@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    marginBottom: 15,
+    marginBottom: 4,
   },
   card: {
     backgroundColor: "#ffffff",
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
   // BOTÕES
   botoesContainer: {
     width: '100%',
-    marginTop: 20,
+    marginTop: 6,
     marginBottom: 20,
   },
   botoesLinha: {
