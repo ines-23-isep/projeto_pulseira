@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",
-    padding: 20,
+    padding: 14,
   },
 
   // ESTILOS DE LOADING
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
   estadoTexto: {
     color: "#e0e7ff",
     fontSize: 16,
-    marginTop: 5,
+    marginTop: 2,
     fontWeight: "500",
   },
   estadoValor: {
@@ -495,8 +495,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 20,
-    padding: 24,
-    marginBottom: 16,
+    padding: 18,
+    marginBottom: 10,
     flex: 1,
     shadowColor: "#000",
     shadowOffset: {
@@ -573,8 +573,8 @@ const styles = StyleSheet.create({
   // BOTÕES
   botoesContainer: {
     width: '100%',
-    marginTop: 6,
-    marginBottom: 20,
+    marginTop: 0,
+    marginBottom: 0,
   },
   botoesLinha: {
     flexDirection: 'row',
