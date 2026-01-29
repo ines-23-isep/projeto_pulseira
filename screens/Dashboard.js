@@ -2,7 +2,7 @@ import { ScrollView, View, Text, TouchableOpacity, StatusBar, Alert } from "reac
 import { useEffect } from "react";
 import { MaterialIcons, FontAwesome5, Ionicons } from "@expo/vector-icons";
 
-export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado, quedaDetetadaAgora, estadoAtual, textoAtualizacao, user }) {
+export default function Dashboard({ setPagina, styles, estado, corEstado, iconeEstado, quedaDetetadaAgora, estadoAtual, textoAtualizacao, user, dadosBatimentos }) {
   
   useEffect(() => {
     if (quedaDetetadaAgora) {
@@ -93,7 +93,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
           </View>
           <View style={{ marginLeft: 15, flex: 1 }}>
             <Text style={styles.cardTitulo}>Batimentos Cardíacos</Text>
-            <Text style={styles.cardValor}>72 <Text style={styles.cardUnidade}>bpm</Text></Text>
+            <Text style={styles.cardValor}>{dadosBatimentos?.bpm || "72 bpm"}</Text>
             <View style={styles.cardStatus}>
               <View style={[styles.statusIndicator, {backgroundColor: '#10b981'}]} />
               <Text style={styles.cardInfo}>Normal</Text>
@@ -110,7 +110,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
             <MaterialIcons name="thermostat" size={22} color="#f59e0b" />
           </View>
           <Text style={styles.cardTitulo}>Temperatura</Text>
-          <Text style={styles.cardValor}>36.5 <Text style={styles.cardUnidade}>°C</Text></Text>
+          <Text style={styles.cardValor}>{dadosBatimentos?.tempC || "36.5 ºC"}</Text>
           <View style={styles.cardStatus}>
             <View style={[styles.statusIndicator, {backgroundColor: '#10b981'}]} />
             <Text style={styles.cardInfo}>Normal</Text>
@@ -123,7 +123,7 @@ export default function Dashboard({ setPagina, styles, estado, corEstado, iconeE
             <FontAwesome5 name="lungs" size={22} color="#3b82f6" />
           </View>
           <Text style={styles.cardTitulo}>Oxigenação</Text>
-          <Text style={styles.cardValor}>{95 + Math.floor(Math.random() * 5)} <Text style={styles.cardUnidade}>%</Text></Text>
+          <Text style={styles.cardValor}>{dadosBatimentos?.spo2 || "98 %"}</Text>
           <View style={styles.cardStatus}>
             <View style={[styles.statusIndicator, {backgroundColor: '#10b981'}]} />
             <Text style={styles.cardInfo}>Normal</Text>
