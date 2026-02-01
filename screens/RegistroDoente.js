@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar, KeyboardAvoidingView, Platform } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function RegistroDoente({ onRegistro, styles }) {
   const [form, setForm] = useState({
@@ -106,20 +107,24 @@ export default function RegistroDoente({ onRegistro, styles }) {
   }
 
   return (
-    <ScrollView
+    <KeyboardAvoidingView 
       style={{ flex: 1, backgroundColor: "#f8fafc" }}
-      contentContainerStyle={{ padding: 20, flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <ScrollView
+        contentContainerStyle={{ padding: 20, flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
       <StatusBar style="dark" />
       
       <View style={styles.loginContainer}>
         {/* Cabeçalho */}
         <View style={styles.loginHeader}>
           <View style={styles.loginLogo}>
-            <Text style={styles.loginLogoText}>👤</Text>
+            <MaterialIcons name="person" size={48} color="#3b82f6" />
           </View>
-          <Text style={styles.loginTitulo}>Registro do Doente</Text>
+          <Text style={styles.loginTitulo}>Registo do Doente</Text>
           <Text style={styles.loginSubtitulo}>
             Preencha os dados do paciente que será monitorizado
           </Text>
@@ -275,5 +280,6 @@ export default function RegistroDoente({ onRegistro, styles }) {
         </View>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

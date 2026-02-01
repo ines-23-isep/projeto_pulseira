@@ -200,7 +200,7 @@ export default function App() {
     );
   }
 
-  // Se não há utilizador, mostrar registro do cuidador
+  // Se não há utilizador, mostrar registo do cuidador
   if (!user) {
     return (
       <LoginCuidador 
@@ -210,7 +210,7 @@ export default function App() {
     );
   }
 
-  // Se há utilizador mas não há doente, mostrar registro do doente
+  // Se há utilizador mas não há doente, mostrar registo do doente
   if (!doente) {
     return (
       <RegistroDoente 

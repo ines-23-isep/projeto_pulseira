@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar, KeyboardAvoidingView, Platform } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function LoginCuidador({ onRegistro, styles }) {
   const [form, setForm] = useState({
@@ -78,20 +79,24 @@ export default function LoginCuidador({ onRegistro, styles }) {
   }
 
   return (
-    <ScrollView
+    <KeyboardAvoidingView 
       style={{ flex: 1, backgroundColor: "#f8fafc" }}
-      contentContainerStyle={{ padding: 20, flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <ScrollView
+        contentContainerStyle={{ padding: 20, flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
       <StatusBar style="dark" />
       
       <View style={styles.loginContainer}>
         {/* Cabeçalho */}
         <View style={styles.loginHeader}>
           <View style={styles.loginLogo}>
-            <Text style={styles.loginLogoText}>👨‍⚕️</Text>
+            <MaterialIcons name="health-and-safety" size={48} color="#3b82f6" />
           </View>
-          <Text style={styles.loginTitulo}>Registro do Cuidador</Text>
+          <Text style={styles.loginTitulo}>Registo do Cuidador</Text>
           <Text style={styles.loginSubtitulo}>
             Crie a sua conta para começar a monitorizar
           </Text>
@@ -197,10 +202,11 @@ export default function LoginCuidador({ onRegistro, styles }) {
         {/* Informação */}
         <View style={styles.loginFooter}>
           <Text style={styles.loginFooterTexto}>
-            Após o registro, irá preencher os dados do paciente
+            Após o registo, irá preencher os dados do paciente
           </Text>
         </View>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
